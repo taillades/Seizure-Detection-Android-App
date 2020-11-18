@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package ch.epfl.seizuredetection
+package ch.epfl.seizuredetection.GUI
 
 import android.os.Bundle
 import android.util.Log
@@ -20,6 +20,8 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import ch.epfl.seizuredetection.R
+import ch.epfl.seizuredetection.SignalClassifier
 import com.google.android.gms.tasks.Task
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions
@@ -161,7 +163,7 @@ class MainActivity : AppCompatActivity() {
 
     @Throws(IOException::class)
     private fun loadModelFile(): ByteBuffer {
-        val fileDescriptor = assets.openFd(MainActivity.MODEL_FILE)
+        val fileDescriptor = assets.openFd(MODEL_FILE)
         val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
         val fileChannel = inputStream.channel
         val startOffset = fileDescriptor.startOffset

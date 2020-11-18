@@ -1,8 +1,10 @@
-package ch.epfl.seizuredetection;
+package ch.epfl.seizuredetection.GUI;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import ch.epfl.seizuredetection.R;
 
 public class EditProfileActivity extends AppCompatActivity {
 

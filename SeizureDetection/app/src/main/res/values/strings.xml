@@ -3,4 +3,5 @@
     <string name="prediction_text_placeholder">prediction_text_placeholder</string>
     <string name="yes_button_text">Compute signal</string>
     <string name="classification_error_message">Error while classifying the signal</string>
+    <string name="photo_upload_failed">Error uploading the image</string>
 </resources>
