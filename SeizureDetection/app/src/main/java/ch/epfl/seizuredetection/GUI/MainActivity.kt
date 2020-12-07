@@ -14,11 +14,13 @@
 
 package ch.epfl.seizuredetection.GUI
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.seizuredetection.R
 import ch.epfl.seizuredetection.SignalClassifier
@@ -45,6 +47,11 @@ class MainActivity : AppCompatActivity() {
     private var signalClassifier = SignalClassifier(this)
     private var firebasePerformance = FirebasePerformance.getInstance()
     private lateinit var remoteConfig: FirebaseRemoteConfig
+    private val BLE_CONNECTION = 1
+    val EXTRAS_DEVICE_NAME = "DEVICE_NAME"
+    val EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS"
+    private var mDeviceAddress: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +65,8 @@ class MainActivity : AppCompatActivity() {
         yesButton?.setOnClickListener {
             //   Firebase.analytics.logEvent("correct_inference", null)
             classifySignal()
+            val intent = Intent(this, DeviceScanActivity::class.java)
+            startActivityForResult(intent, BLE_CONNECTION)
         }
         setupSignalClassifier()
     }
@@ -182,5 +191,14 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "MainActivity"
         private const val MODEL_FILE = "epilepsy_network.tflite"
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, @Nullable data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == BLE_CONNECTION && resultCode == RESULT_OK) {
+            if (data != null) {
+                mDeviceAddress = data.getStringExtra(EXTRAS_DEVICE_ADDRESS)
+            }
+        }
     }
 }
