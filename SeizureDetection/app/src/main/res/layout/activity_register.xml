@@ -1,9 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".GUI.RegisterActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <include layout="@layout/toolbar"/>
+
+    <Button
+        android:id="@+id/Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#84DCC6"
+        android:text="Join!"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="30dp"
+        android:layout_above="@id/textLogin"
+        android:layout_centerInParent="true"
+        />
+
+    <EditText
+        android:id="@+id/Email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_above="@id/Pwd"
+        android:hint="E-mail"
+        android:inputType="textPersonName"
+        android:layout_centerInParent="true"/>
+
+
+    <EditText
+        android:id="@+id/Pwd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_above="@id/RepeatPwd"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:layout_centerInParent="true"/>
+
+    <EditText
+        android:id="@+id/RepeatPwd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_above="@id/Button"
+        android:hint="Repeat the password"
+        android:inputType="textPassword"
+        android:layout_centerInParent="true"/>
+
+    <TextView
+        android:id="@+id/textLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:paddingTop="10dp"
+        android:text="Already registered? Login " />
+
+
+</RelativeLayout>
