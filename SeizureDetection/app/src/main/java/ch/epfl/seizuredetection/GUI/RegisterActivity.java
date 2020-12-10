@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +22,9 @@ public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth; // Auth database instance
     private final String TAG = this.getClass().getSimpleName();
+    private EditText editTextEmail;
+    private EditText editTextPassword;
+
 
 
     @Override
@@ -29,13 +32,27 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         mAuth = FirebaseAuth.getInstance(); // Auth database instance
+        editTextEmail = findViewById(R.id.Email);
+        editTextPassword = findViewById(R.id.Pwd);
         Button btnJoin = findViewById(R.id.Join);
         btnJoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = ((TextView) findViewById(R.id.Email)).getText().toString().trim();
-                String password = ((TextView) findViewById(R.id.Pwd)).getText().toString().trim();
-               registerUser(email, password);
+                String email = editTextEmail.getText().toString().trim();
+                String password = editTextPassword.getText().toString().trim();
+                if(email.isEmpty()){
+                    editTextEmail.setError("Email is required");
+                    editTextEmail.requestFocus();
+                }
+                else if (password.isEmpty()){
+                    editTextPassword.setError("Password is required!");
+                    editTextPassword.requestFocus();
+                }
+                else if (password.length() < 6){
+                    editTextPassword.setError("The password must be at least 6 characters long");
+                    editTextPassword.requestFocus();
+                } else
+                    registerUser(email, password);
             }
         });
 }
