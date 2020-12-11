@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         // Setup view instances
 
-        yesButton = findViewById(R.id.yes_button)
+   /*     yesButton = findViewById(R.id.yes_button)
         predictedTextView = findViewById(R.id.predicted_text)
 
         // Setup YES button
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, DeviceScanActivity::class.java)
             startActivityForResult(intent, BLE_CONNECTION)
         }
-        setupSignalClassifier()
+        setupSignalClassifier()*/
     }
 
     private fun setupSignalClassifier() {

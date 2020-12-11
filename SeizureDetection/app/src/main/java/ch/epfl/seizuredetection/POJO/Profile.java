@@ -8,6 +8,17 @@ public class Profile {
     private float height;
     private String photoPath;
 
+    public Profile(){
+
+    }
+
+    public Profile(String username, String password, float weight, float height) {
+        this.username = username;
+        this.password = password;
+        this.weight = weight;
+        this.height = height;
+    }
+
     public String getPassword() {
         return password;
     }
