@@ -86,6 +86,7 @@ public class DeviceScanActivity extends ListActivity {
                 == PackageManager.PERMISSION_DENIED) {
             requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION"}, 0);
         }
+
     }
 
     @Override
