@@ -157,7 +157,8 @@ public class DeviceScanActivity extends ListActivity {
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device == null) return;
         final Intent intent = new Intent();
-        intent.putExtra(LiveActivity.EXTRAS_DEVICE_NAME, device.getName());
+        String name = device.getName();
+        intent.putExtra(LiveActivity.EXTRAS_DEVICE_NAME, name);
         intent.putExtra(LiveActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
 
         if (mScanning) {
