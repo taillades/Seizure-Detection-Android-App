@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        style="@style/diagonalStyle">
+        style="@style/backgroundMain">
     </RelativeLayout>
 
     <ImageButton
