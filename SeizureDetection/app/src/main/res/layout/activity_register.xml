@@ -24,6 +24,7 @@
         android:id="@+id/Email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@id/Height"
         android:ems="15"
         android:hint="E-mail"
         android:inputType="textPersonName"
@@ -35,28 +36,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="15"
-        android:layout_below="@id/Weight"
         android:hint="Password"
         android:inputType="textPassword"
         android:layout_centerInParent="true"/>
+
 
     <EditText
         android:id="@+id/RepeatPwd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="15"
         android:layout_below="@id/Pwd"
+        android:layout_marginTop="0dp"
+        android:ems="15"
         android:hint="Repeat the password"
         android:inputType="textPassword"
         android:layout_centerInParent="true"/>
-
 
     <EditText
         android:id="@+id/Height"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="15"
-        android:layout_below="@id/Email"
+        android:layout_above="@id/Weight"
         android:hint="Height"
         android:inputType="textPersonName"
         android:layout_centerInParent="true"/>
@@ -66,7 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="15"
-        android:layout_below="@id/Height"
+        android:layout_above="@id/Pwd"
         android:hint="Weight"
         android:inputType="textPersonName"
         android:layout_centerInParent="true"/>

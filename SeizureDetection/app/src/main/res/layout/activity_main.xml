@@ -7,6 +7,14 @@
 
     <include layout="@layout/toolbar"/>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        style="@style/diagonalStyle">
+    </RelativeLayout>
+
     <ImageButton
         android:id="@+id/play"
         android:layout_width="200dp"
@@ -29,22 +37,25 @@
         android:paddingTop="200dp"
         android:textStyle="bold"
         android:text="Start recording!"
+        android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="@+id/play"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.113" />
+        app:layout_constraintVertical_bias="0." />
 
-    <Button
+    <ImageButton
         android:id="@+id/bluetooth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_bluetooth"
         android:text="Bluetooth"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/play" />
+        app:layout_constraintTop_toBottomOf="@+id/play"
+        android:background="#0000" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
