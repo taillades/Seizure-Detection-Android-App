@@ -34,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:paddingTop="200dp"
+        android:paddingTop="130dp"
         android:textStyle="bold"
         android:text="Start recording!"
         android:textSize="40sp"

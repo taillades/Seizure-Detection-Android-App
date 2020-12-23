@@ -24,4 +24,9 @@
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
     <string name="hr_belt">HR belt</string>
+
+    <!-- Strings activity_live layout -->
+    <string name="bpm">bpm</string>
+    <string name="time">s</string>
+
 </resources>

@@ -6,4 +6,108 @@
     android:layout_height="match_parent"
     tools:context=".GUI.LiveActivity">
 
+    <include layout="@layout/toolbar"/>
+
+    <!--- HR and time layout -->
+    <RelativeLayout
+        style="@style/square"
+        android:layout_width="300dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="160dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/heartView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:srcCompat="@drawable/ic_love" />
+
+        <ImageView
+            android:id="@+id/clockView"
+            android:layout_width="53dp"
+            android:layout_height="53dp"
+            android:layout_below="@+id/heartView"
+            app:srcCompat="@drawable/ic_stopwatch" />
+
+        <TextView
+            android:id="@+id/bpmValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BPM VALUE"
+            android:layout_toEndOf="@+id/heartView"/>
+
+        <TextView
+            android:id="@+id/bpm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bpm"
+            android:layout_toEndOf="@+id/bpmValue" />
+        <TextView
+            android:id="@+id/timeValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TIMEVALUE"
+            android:layout_below="@+id/bpmValue"/>
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/time"
+            android:layout_below="@+id/bpm"/>
+
+
+    </RelativeLayout>
+
+    <!--- Plot layout -->
+    <RelativeLayout
+        style="@style/square"
+        android:layout_width="300dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="340dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="#F6F6F6">
+
+
+    </RelativeLayout>
+
+    <!--- Sensor model text -->
+    <TextView
+        android:id="@+id/Model"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:paddingTop="100dp"
+        android:textStyle="bold"
+        android:text="Polar H7 CF4F6013"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!--- Stop Recording Button -->
+    <Button
+        android:id="@+id/stopRecording"
+        android:layout_width="290dp"
+        android:layout_height="wrap_content"
+        android:background="#84DCC6"
+        android:text="Stop recording"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.500"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.9" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,4 +16,8 @@
         <item name="android:background">@drawable/circle_results</item>
     </style>
 
+    <style name="square">
+        <item name="android:background">@drawable/square</item>
+    </style>
+
 </resources>
