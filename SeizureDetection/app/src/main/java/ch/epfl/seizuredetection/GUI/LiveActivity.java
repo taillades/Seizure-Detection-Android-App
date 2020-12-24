@@ -16,7 +16,9 @@ import android.os.IBinder;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,10 +36,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import ch.epfl.seizuredetection.Bluetooth.BluetoothLeService;
 import ch.epfl.seizuredetection.Bluetooth.SampleGattAttributes;
@@ -58,6 +58,7 @@ public class LiveActivity extends AppCompatActivity {
     private String mDeviceName; // Name of the device
     private String mDeviceAddress; // Address of the device
     private boolean mConnected; // True if device connected
+    private ArrayList<Integer> hrArray = new ArrayList();
     // plot attributes
     private long startTime = System.currentTimeMillis() / 1000;
     private final static String TAG = LiveActivity.class.getSimpleName();
@@ -65,8 +66,6 @@ public class LiveActivity extends AppCompatActivity {
     private DatabaseReference recordingRef;
     private String userID;
     private String recID;
-
-
 
 
     //HR Plot
@@ -91,7 +90,9 @@ public class LiveActivity extends AppCompatActivity {
                 // Show all the supported services and characteristics on the user interface.
                 registerHeartRateService(mBluetoothLeService.getSupportedGattServices());
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                displayData(intent.getIntExtra(BluetoothLeService.EXTRA_DATA, 0));
+                Integer hr = intent.getIntExtra(BluetoothLeService.EXTRA_DATA, 0);
+                displayData(hr);
+                hrArray.add(hr);
             }
         }
     };
@@ -128,6 +129,16 @@ public class LiveActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+
+        Button stopRecording = findViewById(R.id.stopRecording);
+        stopRecording.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(LiveActivity.this, "Recording stopped", Toast.LENGTH_SHORT).show();
+                // Upload everything in Firebase
+                recordingRef.child("hr_data").setValue(hrArray);
+            }
+        });
 
         Intent intentFromRec = getIntent();
         userID = intentFromRec.getStringExtra(EditProfileActivity.USER_ID);
