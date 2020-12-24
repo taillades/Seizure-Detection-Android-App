@@ -152,7 +152,7 @@ public class BluetoothLeService extends Service {
     }
 
     public class LocalBinder extends Binder {
-        ch.epfl.seizuredetection.Bluetooth.BluetoothLeService getService() {
+        public ch.epfl.seizuredetection.Bluetooth.BluetoothLeService getService() {
             return ch.epfl.seizuredetection.Bluetooth.BluetoothLeService.this;
         }
     }
