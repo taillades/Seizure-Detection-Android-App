@@ -30,5 +30,6 @@
     <string name="time">s</string>
     <string name="sensor_model">Polar H7 CF4F6013</string>
     <string name="heart_rate">Heart Rate (bpm)</string>
+    <string name="save_recording_success">Recording saved successfully</string>
 
 </resources>

@@ -8,6 +8,8 @@ import ch.epfl.seizuredetection.R;
 
 public class EditProfileActivity extends AppCompatActivity {
 
+    public static final String USER_ID = "USER_ID";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

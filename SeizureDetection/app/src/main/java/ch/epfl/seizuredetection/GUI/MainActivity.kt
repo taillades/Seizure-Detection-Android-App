@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.seizuredetection.R
 import ch.epfl.seizuredetection.SignalClassifier
 import com.google.android.gms.tasks.Task
+import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions
 import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
@@ -43,7 +44,9 @@ import java.nio.channels.FileChannel
 
 class MainActivity : AppCompatActivity() {
 
-    private var play: ImageButton? = null;
+    private var recordingKeySaved: String? = null
+    val USER_ID: String? = "USER_ID"
+    private var play: ImageButton? = null
     private var yesButton: Button? = null
     private var bluetooth: ImageButton? = null
     private var predictedTextView: TextView? = null
@@ -83,11 +86,29 @@ class MainActivity : AppCompatActivity() {
 
         play = findViewById<ImageButton>(R.id.play);
         play!!.setOnClickListener(View.OnClickListener {
-            val intentStartLive = Intent(this, LiveActivity::class.java)
-            //intentStartLive.putExtra(USER_ID, userID)
-            //intentStartLive.putExtra(ch.epfl.esl.sportstracker.NewRecordingFragment.RECORDIND_ID, recordingKeySaved)
-            //intentStartLive.putExtra(ch.epfl.esl.sportstracker.NewRecordingFragment.EXTRAS_DEVICE_ADDRESS, mDeviceAddress)
-            startActivity(intentStartLive)
+            val intent: Intent = getIntent()
+            val userID = intent.extras!!.getString(USER_ID)
+            val database = FirebaseDatabase.getInstance()
+            val profileGetRef = database.getReference("profiles")
+            val recordingRef = profileGetRef.child(userID!!).child("recordings").push()
+            recordingRef.runTransaction(object : Transaction.Handler {
+
+                override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                    mutableData.child("datetime").value = System.currentTimeMillis()
+                    recordingKeySaved = recordingRef.key
+                    return Transaction.success(mutableData)
+                }
+
+                override fun onComplete(databaseError: DatabaseError?, b: Boolean, dataSnapshot: DataSnapshot?) {
+                    showToast("Recording saved successfully")
+                    val intentStartLive = Intent(this@MainActivity, LiveActivity::class.java)
+                    intentStartLive.putExtra(USER_ID, userID)
+                    RECORDING_ID = recordingKeySaved.toString()
+                    intentStartLive.putExtra(RECORDING_ID, recordingKeySaved)
+                    intentStartLive.putExtra(EXTRAS_DEVICE_ADDRESS, mDeviceAddress)
+                    startActivity(intentStartLive)
+                }
+            })
 
         })
     }
@@ -210,6 +231,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        lateinit var RECORDING_ID: String
         private const val TAG = "MainActivity"
         private const val MODEL_FILE = "epilepsy_network.tflite"
     }

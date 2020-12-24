@@ -17,9 +17,9 @@
         <activity android:name=".GUI.LiveActivity" />
         <activity android:name=".GUI.EditProfileActivity" />
         <activity android:name=".GUI.ResultsActivity" />
-        <activity android:name=".GUI.LoginActivity" />
+        <activity android:name=".GUI.MainActivity" />
         <activity android:name=".GUI.RegisterActivity" />
-        <activity android:name=".GUI.MainActivity">
+        <activity android:name=".GUI.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -3,6 +3,7 @@ package ch.epfl.seizuredetection.GUI;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -52,8 +53,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(@NonNull View widget) {
 
-                //Intent intent = new Intent(getActivity(), RegisterActivity.class);
-                //(() getActivity()).startActivity(intent);
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
 
             }
 
@@ -88,7 +89,10 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.putExtra(EditProfileActivity.USER_ID, user.getUid());
                             Toast.makeText(LoginActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
+                            startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
