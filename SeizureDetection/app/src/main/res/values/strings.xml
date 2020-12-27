@@ -32,4 +32,8 @@
     <string name="heart_rate">Heart Rate (bpm)</string>
     <string name="save_recording_success">Recording saved successfully</string>
 
+    <!-- Strings activity_results layout -->
+    <string name="stroke_text">chance of having a stroke</string>
+    <string name="results">Your results</string>
+
 </resources>

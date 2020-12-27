@@ -19,6 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!--- HR -->
         <LinearLayout
             android:id="@+id/LayoutHR"
             android:layout_width="wrap_content"
@@ -65,6 +66,7 @@
 
         </LinearLayout>
 
+        <!--- time -->
         <LinearLayout
             android:id="@+id/LayoutTime"
             android:layout_width="wrap_content"
@@ -82,7 +84,6 @@
                     android:layout_width="53dp"
                     android:layout_height="53dp"
                     android:layout_weight="0"
-                    android:layout_below="@+id/heartView"
                     app:srcCompat="@drawable/ic_stopwatch" />
 
                 <Space
@@ -97,8 +98,7 @@
                     android:layout_weight="1"
                     android:text=""
                     android:textStyle="bold"
-                    android:textSize="23sp"
-                    android:layout_below="@+id/bpmValue"/>
+                    android:textSize="23sp" />
 
                 <Space
                     android:layout_width="10dp"
@@ -112,8 +112,7 @@
                     android:layout_weight="1"
                     android:textStyle="bold"
                     android:textSize="23sp"
-                    android:text="@string/time"
-                    android:layout_below="@+id/bpm"/>
+                    android:text="@string/time" />
 
            </LinearLayout>
     </RelativeLayout>
@@ -131,7 +130,6 @@
         app:layout_constraintTop_toTopOf="parent"
         android:background="#F6F6F6">
 
-        <!--- style="@style/APDefacto.Light"-->
         <com.androidplot.xy.XYPlot
             android:id="@+id/HRplot"
             android:layout_width="match_parent"
@@ -150,7 +148,7 @@
 
 </RelativeLayout>
 
-<!--- Sensor model text -->
+   <!--- Sensor model text -->
     <TextView
         android:id="@+id/Model"
         android:layout_width="wrap_content"
