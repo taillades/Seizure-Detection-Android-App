@@ -1,11 +1,18 @@
 package ch.epfl.seizuredetection.GUI;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,6 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText editTextHeight;
     public static final String USERNAME = "poupoupou";
     public static final String PASSWORD = "pouloulou";
+    TextView textLogin;
 
 
     @Override
@@ -42,6 +50,30 @@ public class RegisterActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.Pwd);
         editTextWeight = findViewById(R.id.Weight);
         editTextHeight = findViewById(R.id.Height);
+        textLogin = findViewById(R.id.textLogin);
+
+        String text = "Already registered? Login";
+        SpannableString signclick = new SpannableString(text);
+
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(intent);
+
+            }
+
+            @Override
+            public void updateDrawState(@NonNull TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setColor(Color.BLUE);
+            }
+        };
+
+        signclick.setSpan(clickableSpan,20,25, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textLogin.setText(signclick);
+        textLogin.setMovementMethod(LinkMovementMethod.getInstance());
 
         Button btnJoin = findViewById(R.id.Join);
         btnJoin.setOnClickListener(new View.OnClickListener() {
