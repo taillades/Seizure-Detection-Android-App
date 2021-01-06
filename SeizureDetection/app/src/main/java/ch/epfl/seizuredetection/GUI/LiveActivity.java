@@ -149,16 +149,17 @@ public class LiveActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Toast.makeText(LiveActivity.this, "Recording stopped", Toast.LENGTH_SHORT).show();
                 // Upload everything in Firebase
-                recordingRef.child("hr_data").setValue(hrArray);
+
+                recordingRef.child("hr_data ").setValue(hrArray);
             }
         });
 
         Intent intentFromRec = getIntent();
         userID = intentFromRec.getStringExtra(EditProfileActivity.USER_ID);
         recID = intentFromRec.getStringExtra(MainActivity.RECORDING_ID);
-
+/*
         getSupportActionBar().setTitle(mDeviceName);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (checkSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_DENIED || checkSelfPermission("android.permission.ACCESS_COARSE_LOCATION") == PackageManager.PERMISSION_DENIED || checkSelfPermission("android.permission.INTERNET") == PackageManager.PERMISSION_DENIED)) {
