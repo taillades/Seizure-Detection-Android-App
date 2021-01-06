@@ -74,7 +74,7 @@ public class LiveActivity extends AppCompatActivity {
     private static final int MAX_HR = 200; //Maximum heart rate value to display on the graph
     private static final int NUMBER_OF_POINTS = 50; //Number of data points to be displayed on the graph
     private XYplotSeriesList xyPlotSeriesList;
-    public static final String HR_PLOT_WATCH = "HR Smart Watch";
+    public static final String HR_PLOT = "HR Polar H7";
 
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
@@ -93,7 +93,20 @@ public class LiveActivity extends AppCompatActivity {
                 Integer hr = intent.getIntExtra(BluetoothLeService.EXTRA_DATA, 0);
                 displayData(hr);
                 hrArray.add(hr);
+
+                // Update PLOT
+                xyPlotSeriesList.updateSeries(HR_PLOT, hr);
+                XYSeries hrSeries = new SimpleXYSeries(xyPlotSeriesList.getSeriesFromList
+                        (HR_PLOT), SimpleXYSeries.ArrayFormat.XY_VALS_INTERLEAVED, HR_PLOT);
+                LineAndPointFormatter formatter = xyPlotSeriesList.getFormatterFromList
+                        (HR_PLOT);
+
+                heartRatePlot.clear();
+                heartRatePlot.addSeries(hrSeries, formatter);
+                heartRatePlot.redraw();
             }
+
+
         }
     };
     // TODO: editar esta función para que haga display de los datos
@@ -161,14 +174,13 @@ public class LiveActivity extends AppCompatActivity {
         LineAndPointFormatter formatter = new LineAndPointFormatter(RED, TRANSPARENT,
                 TRANSPARENT, null);
         formatter.getLinePaint().setStrokeWidth(8);
-        xyPlotSeriesList.initializeSeriesAndAddToList(HR_PLOT_WATCH, MIN_HR, NUMBER_OF_POINTS,
+        xyPlotSeriesList.initializeSeriesAndAddToList(HR_PLOT, MIN_HR, NUMBER_OF_POINTS,
                 formatter);
-        XYSeries HRseries = new SimpleXYSeries(xyPlotSeriesList.getSeriesFromList(HR_PLOT_WATCH),
-                SimpleXYSeries.ArrayFormat.XY_VALS_INTERLEAVED, HR_PLOT_WATCH);
+        XYSeries HRseries = new SimpleXYSeries(xyPlotSeriesList.getSeriesFromList(HR_PLOT),
+                SimpleXYSeries.ArrayFormat.XY_VALS_INTERLEAVED, HR_PLOT);
         heartRatePlot.clear();
         heartRatePlot.addSeries(HRseries, formatter);
         heartRatePlot.redraw();
-
     }
 
     @Override

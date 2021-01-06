@@ -128,12 +128,12 @@
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="#F6F6F6">
+        android:background="#EDEDED">
 
         <com.androidplot.xy.XYPlot
             android:id="@+id/HRplot"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="290dp"
+            android:layout_height="240dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"

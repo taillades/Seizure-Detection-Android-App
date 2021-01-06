@@ -12,6 +12,9 @@ public class XYplotSeriesList {
     private ArrayList<String> xyTagList = new ArrayList<>();
     private ArrayList<LineAndPointFormatter> xyFormatterList = new ArrayList<>();
 
+    //Add an initial xy series of length NUMBER_OF_POINTS to the plot
+    //Initialize the HR values (y) to CONSTANT
+    //Give the xy series a unique xyTag
     public void initializeSeriesAndAddToList(String xyTag, int CONSTANT, int NUMBER_OF_POINTS,
                                              LineAndPointFormatter xyFormatter) {
         Integer[] x = new Integer[NUMBER_OF_POINTS];
@@ -34,10 +37,12 @@ public class XYplotSeriesList {
         return xyList.get(xyTagList.indexOf(xyTag));
     }
 
+    //Update the plot with HR data:
+
     public LineAndPointFormatter getFormatterFromList(String xyTag) {
         return xyFormatterList.get(xyTagList.indexOf(xyTag));
     }
-
+            //Appends a new data point to an existing series w/tag xyTag
     public void updateSeries(String xyTag, int data) {
         List<Number> xy = xyList.get(xyTagList.indexOf(xyTag));
         Integer[] x = xList.get(xyTagList.indexOf(xyTag));
