@@ -13,7 +13,7 @@
         style="@style/square"
         android:layout_width="300dp"
         android:layout_height="150dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="140dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
@@ -123,7 +123,7 @@
         android:id="@+id/LayoutPlot"
         android:layout_width="300dp"
         android:layout_height="250dp"
-        android:layout_marginTop="340dp"
+        android:layout_marginTop="320dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
@@ -132,8 +132,8 @@
 
         <com.androidplot.xy.XYPlot
             android:id="@+id/HRplot"
-            android:layout_width="290dp"
-            android:layout_height="240dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
@@ -154,7 +154,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:paddingTop="100dp"
+        android:paddingTop="80dp"
         android:textStyle="bold"
         android:text="@string/sensor_model"
         android:textSize="30sp"
@@ -178,6 +178,6 @@
         app:layout_constraintHorizontal_bias="0.500"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.9" />
+        app:layout_constraintVertical_bias="0.95" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

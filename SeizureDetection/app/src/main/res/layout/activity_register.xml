@@ -10,12 +10,13 @@
 
     <Button
         android:id="@+id/Join"
-        android:layout_width="wrap_content"
+        android:layout_width="290dp"
         android:layout_height="wrap_content"
         android:background="#84DCC6"
         android:text="Join!"
-        android:ems="13"
         android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:textSize="25sp"
         android:layout_marginTop="30dp"
         android:layout_below="@id/RepeatPwd"
         android:layout_centerInParent="true"

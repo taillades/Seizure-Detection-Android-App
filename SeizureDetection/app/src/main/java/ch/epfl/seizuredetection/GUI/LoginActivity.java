@@ -10,6 +10,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -75,6 +76,17 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        //Remove going back button from toolbar
+        View backButton = findViewById(R.id.backButton);
+        ViewGroup parent = (ViewGroup)backButton.getParent();
+        parent.removeView(backButton);
+
+        //Remove profile button from toolbar
+        View profileButton = findViewById(R.id.profile);
+        ViewGroup parent2 = (ViewGroup)profileButton.getParent();
+        parent2.removeView(profileButton);
+
 
         mAuth = FirebaseAuth.getInstance(); // Auth database instance
         editTextEmail = findViewById(R.id.LoginEmail);

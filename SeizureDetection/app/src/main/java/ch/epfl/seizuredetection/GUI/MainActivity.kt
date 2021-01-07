@@ -18,6 +18,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
@@ -109,6 +110,12 @@ class MainActivity : AppCompatActivity() {
             })
 
         })
+
+
+        //Remove going back button from toolbar
+        val backButton = findViewById<View>(R.id.backButton)
+        val parent = backButton.parent as ViewGroup
+        parent.removeView(backButton)
 
         // Toolbar action to Edit Profile
         profileButton = findViewById<ImageButton>(R.id.profile)
