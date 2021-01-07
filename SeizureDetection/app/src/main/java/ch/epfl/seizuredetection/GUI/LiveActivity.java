@@ -29,19 +29,31 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYGraphWidget;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
+import com.google.android.gms.common.util.ArrayUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.tensorflow.lite.DataType;
+import org.tensorflow.lite.support.common.ops.NormalizeOp;
+import org.tensorflow.lite.support.common.ops.QuantizeOp;
+import org.tensorflow.lite.support.image.ImageProcessor;
+import org.tensorflow.lite.support.image.ops.Rot90Op;
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
+
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ch.epfl.seizuredetection.Bluetooth.BluetoothLeService;
 import ch.epfl.seizuredetection.Bluetooth.SampleGattAttributes;
 import ch.epfl.seizuredetection.R;
+import ch.epfl.seizuredetection.ml.CompressionNn0;
 
 import static android.graphics.Color.RED;
 import static android.graphics.Color.TRANSPARENT;
@@ -53,6 +65,7 @@ public class LiveActivity extends AppCompatActivity {
     // Fields related to the Bluetooth connexion
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
+    private static int THREE_SEC_SIGNAL_LEN =741;
     private BluetoothLeService mBluetoothLeService;
     //private ServiceConnection mServiceConnection;
     private String mDeviceName; // Name of the device
@@ -148,9 +161,14 @@ public class LiveActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(LiveActivity.this, "Recording stopped", Toast.LENGTH_SHORT).show();
-                // Upload everything in Firebase
-
-                recordingRef.child("hr_data ").setValue(hrArray);
+                // Divide the signal
+                int i=1;
+                while(hrArray.toArray().length > THREE_SEC_SIGNAL_LEN*i++) {
+                    // Compress the signal
+                    float[] compressedSignal =compressor((ArrayList<Integer>) hrArray.subList(THREE_SEC_SIGNAL_LEN*(i-1),THREE_SEC_SIGNAL_LEN*i));
+                    // Upload everything in Firebase
+                    recordingRef.child("hr_compressed_data ").setValue(compressedSignal);
+                }
             }
         });
 
@@ -205,6 +223,70 @@ public class LiveActivity extends AppCompatActivity {
         super.onDestroy();
         unbindService(mServiceConnection);
         mBluetoothLeService = null;
+    }
+
+    private float[] compressor(ArrayList<Integer> input_sig) {
+        try {
+            int[] int_input_signal = ArrayUtils.toPrimitiveArray(Arrays.asList(input_sig.toArray(new Integer[0])));
+            float[] input_signal = {};
+            int sum = 0;
+            long variance = 0;
+            float[] x = {};
+            for(int i=0; i<int_input_signal.length;i++){
+                input_signal[i]=(float) int_input_signal[i];
+                sum += int_input_signal[i];
+                x[i]= (float) i;
+                variance += Math.pow(int_input_signal[i],2);
+            }
+            float mean = sum/int_input_signal.length;
+            float std = (float) Math.sqrt(variance);
+            for(int i=0; i<int_input_signal.length;i++){
+                input_signal[i]= (input_signal[i]-mean)/std; // signal standardization
+            }
+
+            //remove trend()
+            input_signal = detrend(x,input_signal);
+
+            Context context=getApplicationContext();
+            CompressionNn0 model = CompressionNn0.newInstance(context);
+
+            // Creates inputs for reference.
+            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 768}, DataType.FLOAT32);
+            inputFeature0.loadArray(input_signal);
+            // Runs model inference and gets result.
+            CompressionNn0.Outputs outputs = model.process(inputFeature0);
+            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
+            // Releases model resources if no longer used.
+            model.close();
+            return outputFeature0.getFloatArray();
+        } catch (IOException e) {
+            // TODO Handle the exception
+            Toast.makeText(LiveActivity.this, "Failed to compress the signal", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
+
+    public static float[] detrend(float[] x, float[] y) {
+
+        // TO DO !!!!
+
+     /*   if (x.length != y.length)
+            throw new IllegalArgumentException("The x and y data elements needs to be of the same length");
+
+        SimpleRegression regression = new SimpleRegression();
+
+        for (int i = 0; i < x.length; i++) {
+            regression.addData(x[i], y[i]);
+        }
+
+        double slope = regression.getSlope();
+        double intercept = regression.getIntercept();
+
+        for (int i = 0; i < x.length; i++) {
+            //y -= intercept + slope * x
+            y[i] -= intercept + (x[i] * slope);
+        }*/
+        return y;
     }
 
 

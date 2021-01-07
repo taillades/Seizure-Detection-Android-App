@@ -24,8 +24,14 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import org.tensorflow.lite.DataType;
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
+
+import java.io.IOException;
+
 import ch.epfl.seizuredetection.POJO.Profile;
 import ch.epfl.seizuredetection.R;
+import ch.epfl.seizuredetection.ml.CompressionNn0;
 
 public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth; // Auth database instance
