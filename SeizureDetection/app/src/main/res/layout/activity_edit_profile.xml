@@ -16,7 +16,7 @@
         android:text="Edit your profile"
         android:textStyle="bold"
         android:textSize="40sp"
-        android:paddingBottom="100dp"
+        android:paddingBottom="40dp"
         android:layout_alignStart="@id/Email" />
 
     <TextView
@@ -44,8 +44,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_above="@id/PwdText"
             android:layout_alignStart="@id/Email"
-            android:layout_centerInParent="true"
             android:paddingTop="10dp" >
 
             <LinearLayout
@@ -68,8 +68,8 @@
                         android:layout_height="wrap_content"
                         android:ems="7"
                         android:layout_above="@id/WeightText"
-                        android:hint="Height"
-                        android:inputType="textPersonName"
+                        android:hint="Height (cm)"
+                        android:inputType="number"
                         android:layout_centerInParent="true"/>
 
             </LinearLayout>
@@ -99,8 +99,8 @@
                     android:layout_height="wrap_content"
                     android:ems="7"
                     android:layout_above="@id/PwdText"
-                    android:hint="Weight"
-                    android:inputType="textPersonName"
+                    android:hint="Weight (kg)"
+                    android:inputType="numberDecimal"
                     android:layout_centerInParent="true"/>
 
             </LinearLayout>
@@ -110,11 +110,11 @@
         android:id="@+id/PwdText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/Layout"
         android:text="New password:"
         android:textStyle="bold"
         android:textSize="20sp"
         android:paddingTop="10dp"
+        android:layout_centerInParent="true"
         android:layout_alignStart="@id/Pwd" />
 
     <EditText
@@ -123,12 +123,31 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/PwdText"
         android:ems="15"
-        android:hint="New password"
+        android:inputType="textPassword"
+        android:layout_centerInParent="true"/>
+
+    <TextView
+        android:id="@+id/RepeatPwdText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Pwd"
+        android:text="Repeat new password:"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:paddingTop="10dp"
+        android:layout_alignStart="@id/Pwd" />
+
+    <EditText
+        android:id="@+id/RepeatPwd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/RepeatPwdText"
+        android:ems="15"
         android:inputType="textPassword"
         android:layout_centerInParent="true"/>
 
     <Button
-        android:id="@+id/Join"
+        android:id="@+id/SaveChanges"
         android:layout_width="290dp"
         android:layout_height="wrap_content"
         android:background="#84DCC6"
@@ -136,7 +155,7 @@
         android:textColor="#FFFFFF"
         android:textAllCaps="false"
         android:textSize="25sp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="150dp"
         android:layout_below="@id/Pwd"
         android:layout_centerInParent="true"
         />

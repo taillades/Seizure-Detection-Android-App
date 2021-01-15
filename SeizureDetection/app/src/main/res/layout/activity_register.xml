@@ -60,8 +60,8 @@
         android:layout_height="wrap_content"
         android:ems="15"
         android:layout_above="@id/Weight"
-        android:hint="Height"
-        android:inputType="textPersonName"
+        android:hint="Height (cm)"
+        android:inputType="number"
         android:layout_centerInParent="true"/>
 
     <EditText
@@ -70,8 +70,8 @@
         android:layout_height="wrap_content"
         android:ems="15"
         android:layout_above="@id/Pwd"
-        android:hint="Weight"
-        android:inputType="textPersonName"
+        android:hint="Weight (kg)"
+        android:inputType="numberDecimal"
         android:layout_centerInParent="true"/>
 
     <TextView

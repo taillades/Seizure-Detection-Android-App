@@ -129,7 +129,7 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            Profile user = new Profile(email, password, Integer. parseInt(height), Integer. parseInt(weight));
+                            Profile user = new Profile(email, password, Integer. parseInt(height), Float. parseFloat(weight));
                             FirebaseUser currentUser = mAuth.getCurrentUser();
                             // Adding the profile to the database
                             FirebaseDatabase.getInstance().getReference("profiles").child(currentUser.getUid()).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
