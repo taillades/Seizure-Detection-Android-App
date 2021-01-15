@@ -5,14 +5,14 @@ public class Profile {
     private String username;
     private String password;
     private float weight;
-    private float height;
+    private int height;
     private String photoPath;
 
     public Profile(){
 
     }
 
-    public Profile(String username, String password, float weight, float height) {
+    public Profile(String username, String password, int height, float weight) {
         this.username = username;
         this.password = password;
         this.weight = weight;
@@ -63,7 +63,7 @@ public class Profile {
         return height;
     }
 
-    public void setHeight(float height) {
+    public void setHeight(int height) {
         this.height = height;
     }
 }
