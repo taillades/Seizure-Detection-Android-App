@@ -10,6 +10,10 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -53,6 +57,7 @@ import java.util.List;
 
 import ch.epfl.seizuredetection.Bluetooth.BluetoothLeService;
 import ch.epfl.seizuredetection.Bluetooth.SampleGattAttributes;
+import ch.epfl.seizuredetection.Data.AppDatabase;
 import ch.epfl.seizuredetection.R;
 import ch.epfl.seizuredetection.ml.CompressionNn0;
 
@@ -61,7 +66,7 @@ import static android.graphics.Color.TRANSPARENT;
 
 
 
-public class LiveActivity extends AppCompatActivity {
+public class LiveActivity extends AppCompatActivity implements SensorEventListener {
 
     // Fields related to the Bluetooth connexion
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
@@ -81,6 +86,10 @@ public class LiveActivity extends AppCompatActivity {
     private String userID;
     private String recID;
 
+    //SQLite Database
+    private AppDatabase AppDB;
+    private List<Integer> hrList = new ArrayList<Integer>();
+    private int sizeListToSave = 10;
 
     //HR Plot
     private static XYPlot heartRatePlot;
@@ -162,6 +171,10 @@ public class LiveActivity extends AppCompatActivity {
         View profileButton = findViewById(R.id.profile);
         ViewGroup parent2 = (ViewGroup)profileButton.getParent();
         parent2.removeView(profileButton);
+
+        // Create instance of Sport Tracker Room DB
+        AppDB = AppDatabase.getDatabase(getApplicationContext());
+
 
         final Intent intent = getIntent();
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
@@ -395,6 +408,26 @@ public class LiveActivity extends AppCompatActivity {
 
     public void stopRecording(View view){
 
+
+    }
+
+    //SQLite
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        int heartRate = (int) event.values[0];
+        hrList.add(heartRate);
+
+        // Save the data when you have a multiple of sizeListToSave
+        if (hrList.size() % sizeListToSave == 0) {
+            SavingHeartRateAsyncTask hrAsyncTask = new SavingHeartRateAsyncTask(AppDB);
+            hrAsyncTask.execute(hrList);
+            hrList.clear();
+        }
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
 }

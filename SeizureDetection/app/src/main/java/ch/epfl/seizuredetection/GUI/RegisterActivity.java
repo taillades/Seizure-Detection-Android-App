@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -26,6 +27,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
+import ch.epfl.seizuredetection.Data.AppDatabase;
+import ch.epfl.seizuredetection.Data.Constant;
+import ch.epfl.seizuredetection.Data.ProfileEntity;
 import ch.epfl.seizuredetection.POJO.Profile;
 import ch.epfl.seizuredetection.R;
 
@@ -40,7 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
     public static final String USERNAME = "poupoupou";
     public static final String PASSWORD = "pouloulou";
     TextView textLogin;
-
+    AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,12 @@ public class RegisterActivity extends AppCompatActivity {
         View profileButton = findViewById(R.id.profile);
         ViewGroup parent2 = (ViewGroup)profileButton.getParent();
         parent2.removeView(profileButton);
+
+        //Call SQLite db
+        db = Room.databaseBuilder(getApplicationContext(),AppDatabase.class, Constant.BD_NAME)
+                .allowMainThreadQueries()
+                .build();
+        ProfileEntity obj = new ProfileEntity();
 
         String text = "Already registered? Login";
         SpannableString signclick = new SpannableString(text);
@@ -95,6 +105,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String height = editTextHeight.getText().toString().trim();
                 String weight = editTextWeight.getText().toString().trim();
 
+
                 if(email.isEmpty()){
                     editTextEmail.setError("Email is required");
                     editTextEmail.requestFocus();
@@ -115,12 +126,18 @@ public class RegisterActivity extends AppCompatActivity {
                     editTextWeight.setError("Weight is required!");
                     editTextWeight.requestFocus();
                 }   else
-                    registerUser(email, password, height, weight);
+                    //SQLite
+                    obj.setEmail(email);
+                    obj.setHeight(Integer. parseInt(height));
+                    obj.setWeight(Float. parseFloat(weight));
+                    obj.setPassword(password);
+                    long result = db.profileDAO().insert(obj);
+                    registerUser(email, password, height, weight,obj,result);
             }
         });
 }
 
-    private void registerUser(final String email, final String password, final String height, final String weight) {
+    private void registerUser(final String email, final String password, final String height, final String weight, ProfileEntity obj, long result) {
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -149,12 +166,27 @@ public class RegisterActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(RegisterActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Authentication with firebase failed.", Toast.LENGTH_SHORT).show();
+                            registerUserSQ(obj,result);
                             //updateUI(null);
                         }
 
                         // ...
                     }
                 });
+    }
+
+    public void registerUserSQ(ProfileEntity obj,long result){
+        if(result>0){ //correct
+            int number = db.profileDAO().count();
+            Toast.makeText(RegisterActivity.this, "There are " + number + " number of users", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+            intent.putExtra(USERNAME, obj.getEmail());
+            intent.putExtra(PASSWORD, obj.getPassword());
+            startActivity(intent);
+
+        }else{ //error
+            Toast.makeText(RegisterActivity.this, "Error writing in local database.", Toast.LENGTH_SHORT).show();
+        }
     }
 }
