@@ -1,12 +1,12 @@
 package ch.epfl.seizuredetection.POJO;
 
 public class Profile {
-    private String userID;
+    //private String userID;
     private String username;
     private String password;
     private float weight;
     private int height;
-    private String photoPath;
+    //private String photoPath;
 
     public Profile(){
 
@@ -27,11 +27,9 @@ public class Profile {
         this.password = password;
     }
 
-    public String getPhotoPath() {
-        return photoPath;
-    }
+   /*public String getPhotoPath() { return photoPath; }
 
-    public void setPhotoPath(String photoPath) {
+   public void setPhotoPath(String photoPath) {
         this.photoPath = photoPath;
     }
 
@@ -41,7 +39,7 @@ public class Profile {
 
     public void setUserID(String userID) {
         this.userID = userID;
-    }
+    }*/
 
     public String getUsername() {
         return username;

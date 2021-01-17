@@ -69,4 +69,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf:19.0.9'
     implementation 'com.google.firebase:firebase-config-ktx:20.0.0'
 
+    //SQLite
+    implementation 'androidx.room:room-runtime:2.2.5'
+    annotationProcessor 'androidx.room:room-compiler:2.2.5'
 }
