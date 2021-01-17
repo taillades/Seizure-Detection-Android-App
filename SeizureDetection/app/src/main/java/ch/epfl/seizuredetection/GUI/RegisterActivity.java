@@ -127,7 +127,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(RegisterActivity.this, "User has been registered successfuly", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Toast.makeText(RegisterActivity.this, "User has not been registered successfuly", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(RegisterActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
