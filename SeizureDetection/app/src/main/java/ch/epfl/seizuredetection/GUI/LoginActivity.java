@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(intent);
                         } else {
                             Toast.makeText(LoginActivity.this, "Authentication with Firebase failed.", Toast.LENGTH_SHORT).show();
-                            loginSQL(email, password);
+                            //loginSQL(email, password);
 
                         }
                     }
@@ -144,17 +144,17 @@ public class LoginActivity extends AppCompatActivity {
         });
      }
 
-     private void loginSQL(String email, String password){
-      String pwd = db.profileDAO().getPwd(email);
-      Toast.makeText(LoginActivity.this, pwd +  " + " + password, Toast.LENGTH_SHORT).show();
-      if (pwd.equals(password)){
-          Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-          Toast.makeText(LoginActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
-          startActivity(intent);
-      }
-      else{
-          editTextPassword.setError("Wrong email or password");
-          editTextPassword.requestFocus();
-      }
-     }
+//     private void loginSQL(String email, String password){
+//      String pwd = db.profileDAO().getPwd(email);
+//      Toast.makeText(LoginActivity.this, pwd +  " + " + password, Toast.LENGTH_SHORT).show();
+//      if (pwd.equals(password)){
+//          Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//          Toast.makeText(LoginActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
+//          startActivity(intent);
+//      }
+//      else{
+//          editTextPassword.setError("Wrong email or password");
+//          editTextPassword.requestFocus();
+//      }
+//     }
 }
