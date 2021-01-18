@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     val USER_ID: String? = "USER_ID"
     private var play: ImageButton? = null
     private var yesButton: Button? = null
+    private var editTextDeviceID: EditText? = null
     private var bluetooth: ImageButton? = null
     private var predictedTextView: TextView? = null
     private var profileButton: ImageButton? = null
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity() {
     private val BLE_CONNECTION = 1
     val EXTRAS_DEVICE_NAME = "DEVICE_NAME"
     val EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS"
+    val EXTRAS_DEVICE_ID = "DEVICE_ID"
     private var mDeviceAddress: String? = null
 
 
@@ -74,14 +76,7 @@ class MainActivity : AppCompatActivity() {
 
         }
         setupSignalClassifier()*/
-        bluetooth = findViewById(R.id.bluetooth)
 
-        // Setup YES button
-        bluetooth?.setOnClickListener {
-            val intent = Intent(this, DeviceScanActivity::class.java)
-            startActivityForResult(intent, BLE_CONNECTION)
-
-        }
 
         play = findViewById<ImageButton>(R.id.play);
         play!!.setOnClickListener(View.OnClickListener {
@@ -99,163 +94,165 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onComplete(databaseError: DatabaseError?, b: Boolean, dataSnapshot: DataSnapshot?) {
-                    showToast("Recording saved successfully")
+                    showToast("The recording will be stored in the DB")
                     val intentStartLive = Intent(this@MainActivity, LiveActivity::class.java)
                     intentStartLive.putExtra(USER_ID, userID)
                     RECORDING_ID = recordingKeySaved.toString()
                     intentStartLive.putExtra(RECORDING_ID, recordingKeySaved)
                     intentStartLive.putExtra(EXTRAS_DEVICE_ADDRESS, mDeviceAddress)
+                    editTextDeviceID = findViewById(R.id.textDeviceID) as EditText
+                    intentStartLive.putExtra(EXTRAS_DEVICE_ID, editTextDeviceID!!.text)
                     startActivity(intentStartLive)
-                }
-            })
+}
+})
 
-        })
-
-
-        //Remove going back button from toolbar
-        val backButton = findViewById<View>(R.id.backButton)
-        val parent = backButton.parent as ViewGroup
-        parent.removeView(backButton)
-
-        // Toolbar action to Edit Profile
-        profileButton = findViewById<ImageButton>(R.id.profile)
-        profileButton!!.setOnClickListener {
-            val intentProfile = Intent(this@MainActivity, EditProfileActivity::class.java)
-            //intentProfile.putExtra(USER_ID, userID)
-            startActivity(intentProfile)
-            }
-
-    }
-
-    private fun setupSignalClassifier() {
-        // Add these lines to create and start the trace
-        val downloadTrace = firebasePerformance.newTrace("download_model")
-        downloadTrace.start()
-        downloadModel("epilepsy_network")
-                // Add these lines to stop the trace on success
-                .addOnSuccessListener {
-                    downloadTrace.stop()
-                }
-    }
+})
 
 
-    private fun configureRemoteConfig() {
-        remoteConfig = Firebase.remoteConfig
-        val configSettings = remoteConfigSettings {
-            minimumFetchIntervalInSeconds = 3600
-        }
-        remoteConfig.setConfigSettingsAsync(configSettings)
-    }
+//Remove going back button from toolbar
+val backButton = findViewById<View>(R.id.backButton)
+val parent = backButton.parent as ViewGroup
+parent.removeView(backButton)
 
-    private fun downloadModel(modelName: String): Task<Void> {
-        val remoteModel = FirebaseCustomRemoteModel.Builder(modelName).build()
-        val firebaseModelManager = FirebaseModelManager.getInstance()
-        return firebaseModelManager
-                .isModelDownloaded(remoteModel)
-                .continueWithTask { task ->
-                    // Create update condition if model is already downloaded, otherwise create download
-                    // condition.
-                    val conditions = if (task.result != null && task.result == true) {
-                        FirebaseModelDownloadConditions.Builder()
-                                .requireWifi()
-                                .build() // Update condition that requires wifi.
-                    } else {
-                        FirebaseModelDownloadConditions.Builder().build() // Download condition.
-                    }
-                    firebaseModelManager.download(remoteModel, conditions)
-                }
-                .addOnSuccessListener {
-                    firebaseModelManager.getLatestModelFile(remoteModel)
-                            .addOnCompleteListener {
-                                val model = it.result
-                                if (model == null) {
-                                    showToast("Failed to get model file.")
-                                } else {
-                                    showToast("Downloaded remote model: $modelName")
-                                    signalClassifier.initialize(model)
-                                }
-                            }
-                }
-                .addOnFailureListener {
-                    showToast("Model download failed for $modelName, please check your connection.")
-                }
-    }
+// Toolbar action to Edit Profile
+profileButton = findViewById<ImageButton>(R.id.profile)
+profileButton!!.setOnClickListener {
+val intentProfile = Intent(this@MainActivity, EditProfileActivity::class.java)
+//intentProfile.putExtra(USER_ID, userID)
+startActivity(intentProfile)
+}
 
-    override fun onDestroy() {
-        signalClassifier.close()
-        super.onDestroy()
-    }
+}
 
-    private fun handout_results() {
+private fun setupSignalClassifier() {
+// Add these lines to create and start the trace
+val downloadTrace = firebasePerformance.newTrace("download_model")
+downloadTrace.start()
+downloadModel("epilepsy_network")
+// Add these lines to stop the trace on success
+.addOnSuccessListener {
+downloadTrace.stop()
+}
+}
 
-        if ((signal != null) && (signalClassifier.isInitialized)) {
-            // Add these lines to create and start the trace
-            val classifyTrace = firebasePerformance.newTrace("classify")
-            classifyTrace.start()
-            signalClassifier
-                    .classifyAsync(signal)
-                    .addOnSuccessListener { resultText ->
-                        // Add this line to stop the trace on success
-                        classifyTrace.stop()
-                    }
-                    .addOnFailureListener {
-                        Log.e(TAG, "Error classifying drawing.")
-                    }
-        }
-    }
 
-    private fun classifySignal() {
-        if ((signal != null) && (signalClassifier.isInitialized)) {
-            // Add these lines to create and start the trace
-            val classifyTrace = firebasePerformance.newTrace("classify")
-            classifyTrace.start()
-            signalClassifier
-                    .classifyAsync(signal)
-                    .addOnSuccessListener { resultText ->
-                        // Add this line to stop the trace on success
-                        predictedTextView?.text = resultText
-                        classifyTrace.stop()
-                    }
-                    .addOnFailureListener { e ->
-                        predictedTextView?.text = getString(
-                                R.string.classification_error_message,
-                                e.localizedMessage
-                        )   //it's red but it compiles... Life is life ?
-                        Log.e(TAG, "Error classifying drawing.", e)
-                    }
-        }
-    }
+private fun configureRemoteConfig() {
+remoteConfig = Firebase.remoteConfig
+val configSettings = remoteConfigSettings {
+minimumFetchIntervalInSeconds = 3600
+}
+remoteConfig.setConfigSettingsAsync(configSettings)
+}
 
-    @Throws(IOException::class)
-    private fun loadModelFile(): ByteBuffer {
-        val fileDescriptor = assets.openFd(MODEL_FILE)
-        val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-        val fileChannel = inputStream.channel
-        val startOffset = fileDescriptor.startOffset
-        val declaredLength = fileDescriptor.declaredLength
-        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
-    }
+private fun downloadModel(modelName: String): Task<Void> {
+val remoteModel = FirebaseCustomRemoteModel.Builder(modelName).build()
+val firebaseModelManager = FirebaseModelManager.getInstance()
+return firebaseModelManager
+.isModelDownloaded(remoteModel)
+.continueWithTask { task ->
+// Create update condition if model is already downloaded, otherwise create download
+// condition.
+val conditions = if (task.result != null && task.result == true) {
+ FirebaseModelDownloadConditions.Builder()
+         .requireWifi()
+         .build() // Update condition that requires wifi.
+} else {
+ FirebaseModelDownloadConditions.Builder().build() // Download condition.
+}
+firebaseModelManager.download(remoteModel, conditions)
+}
+.addOnSuccessListener {
+firebaseModelManager.getLatestModelFile(remoteModel)
+     .addOnCompleteListener {
+         val model = it.result
+         if (model == null) {
+             showToast("Failed to get model file.")
+         } else {
+             showToast("Downloaded remote model: $modelName")
+             signalClassifier.initialize(model)
+         }
+     }
+}
+.addOnFailureListener {
+showToast("Model download failed for $modelName, please check your connection.")
+}
+}
 
-    private fun showToast(text: String) {
-        Toast.makeText(
-                this,
-                text,
-                Toast.LENGTH_LONG
-        ).show()
-    }
+override fun onDestroy() {
+signalClassifier.close()
+super.onDestroy()
+}
 
-    companion object {
-        lateinit var RECORDING_ID: String
-        private const val TAG = "MainActivity"
-        private const val MODEL_FILE = "epilepsy_network.tflite"
-    }
+private fun handout_results() {
 
-     override fun onActivityResult(requestCode: Int, resultCode: Int, @Nullable data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == BLE_CONNECTION && resultCode == RESULT_OK) {
-            if (data != null) {
-                mDeviceAddress = data.getStringExtra(EXTRAS_DEVICE_ADDRESS)
-            }
-        }
-    }
+if ((signal != null) && (signalClassifier.isInitialized)) {
+// Add these lines to create and start the trace
+val classifyTrace = firebasePerformance.newTrace("classify")
+classifyTrace.start()
+signalClassifier
+.classifyAsync(signal)
+.addOnSuccessListener { resultText ->
+ // Add this line to stop the trace on success
+ classifyTrace.stop()
+}
+.addOnFailureListener {
+ Log.e(TAG, "Error classifying drawing.")
+}
+}
+}
+
+private fun classifySignal() {
+if ((signal != null) && (signalClassifier.isInitialized)) {
+// Add these lines to create and start the trace
+val classifyTrace = firebasePerformance.newTrace("classify")
+classifyTrace.start()
+signalClassifier
+.classifyAsync(signal)
+.addOnSuccessListener { resultText ->
+ // Add this line to stop the trace on success
+ predictedTextView?.text = resultText
+ classifyTrace.stop()
+}
+.addOnFailureListener { e ->
+ predictedTextView?.text = getString(
+         R.string.classification_error_message,
+         e.localizedMessage
+ )   //it's red but it compiles... Life is life ?
+ Log.e(TAG, "Error classifying drawing.", e)
+}
+}
+}
+
+@Throws(IOException::class)
+private fun loadModelFile(): ByteBuffer {
+val fileDescriptor = assets.openFd(MODEL_FILE)
+val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
+val fileChannel = inputStream.channel
+val startOffset = fileDescriptor.startOffset
+val declaredLength = fileDescriptor.declaredLength
+return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
+}
+
+private fun showToast(text: String) {
+Toast.makeText(
+this,
+text,
+Toast.LENGTH_LONG
+).show()
+}
+
+companion object {
+lateinit var RECORDING_ID: String
+private const val TAG = "MainActivity"
+private const val MODEL_FILE = "epilepsy_network.tflite"
+}
+
+override fun onActivityResult(requestCode: Int, resultCode: Int, @Nullable data: Intent?) {
+super.onActivityResult(requestCode, resultCode, data)
+if (requestCode == BLE_CONNECTION && resultCode == RESULT_OK) {
+if (data != null) {
+mDeviceAddress = data.getStringExtra(EXTRAS_DEVICE_ADDRESS)
+}
+}
+}
 }

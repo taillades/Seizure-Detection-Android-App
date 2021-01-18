@@ -8,12 +8,13 @@
     <include layout="@layout/toolbar"/>
 
     <RelativeLayout
+        style="@style/backgroundMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        style="@style/backgroundMain">
-    </RelativeLayout>
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="-73dp"></RelativeLayout>
 
     <ImageButton
         android:id="@+id/play"
@@ -45,17 +46,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0." />
 
-    <ImageButton
-        android:id="@+id/bluetooth"
+    <EditText
+        android:id="@+id/textDeviceID"
+        style="@android:style/Widget.EditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_bluetooth"
-        android:text="Bluetooth"
+        android:background="#0000"
+        android:inputType="textShortMessage"
+        android:text="Device ID"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/play"
-        android:background="#0000" />
+        app:layout_constraintTop_toBottomOf="@+id/play" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
