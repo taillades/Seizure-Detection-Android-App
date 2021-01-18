@@ -1,5 +1,6 @@
 package ch.epfl.seizuredetection.GUI;
 
+import android.Manifest;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
@@ -10,17 +11,12 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.reactivestreams.Publisher;
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.common.ops.NormalizeOp;
 import org.tensorflow.lite.support.common.ops.QuantizeOp;
@@ -53,25 +50,43 @@ import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import ch.epfl.seizuredetection.Bluetooth.BluetoothLeService;
 import ch.epfl.seizuredetection.Bluetooth.SampleGattAttributes;
-import ch.epfl.seizuredetection.Data.AppDatabase;
 import ch.epfl.seizuredetection.R;
 import ch.epfl.seizuredetection.ml.CompressionNn0;
 
 import static android.graphics.Color.RED;
 import static android.graphics.Color.TRANSPARENT;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Function;
+import polar.com.sdk.api.PolarBleApi;
+import polar.com.sdk.api.PolarBleApiCallback;
+import polar.com.sdk.api.PolarBleApiDefaultImpl;
+import polar.com.sdk.api.errors.PolarInvalidArgument;
+import polar.com.sdk.api.model.PolarAccelerometerData;
+import polar.com.sdk.api.model.PolarDeviceInfo;
+import polar.com.sdk.api.model.PolarEcgData;
+import polar.com.sdk.api.model.PolarExerciseData;
+import polar.com.sdk.api.model.PolarExerciseEntry;
+import polar.com.sdk.api.model.PolarHrBroadcastData;
+import polar.com.sdk.api.model.PolarHrData;
+import polar.com.sdk.api.model.PolarOhrPPGData;
+import polar.com.sdk.api.model.PolarOhrPPIData;
+import polar.com.sdk.api.model.PolarSensorSetting;
 
 
-public class LiveActivity extends AppCompatActivity implements SensorEventListener {
+public class LiveActivity extends AppCompatActivity {
 
     // Fields related to the Bluetooth connexion
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
-    private static int THREE_SEC_SIGNAL_LEN =741;
+    private static int THREE_SEC_SIGNAL_LEN =768;
     private BluetoothLeService mBluetoothLeService;
     //private ServiceConnection mServiceConnection;
     private String mDeviceName; // Name of the device
@@ -86,10 +101,14 @@ public class LiveActivity extends AppCompatActivity implements SensorEventListen
     private String userID;
     private String recID;
 
-    //SQLite Database
-    private AppDatabase AppDB;
-    private List<Integer> hrList = new ArrayList<Integer>();
-    private int sizeListToSave = 10;
+    // Polar API
+    private PolarBleApi api;
+    private Disposable ecgDisposable = null;
+    private String deviceId;
+
+    // Signal
+    private ArrayList<Integer> ecg = new ArrayList();
+    public static String SIGNAL= "im signal";
 
     //HR Plot
     private static XYPlot heartRatePlot;
@@ -97,41 +116,8 @@ public class LiveActivity extends AppCompatActivity implements SensorEventListen
     private static final int MAX_HR = 200; //Maximum heart rate value to display on the graph
     private static final int NUMBER_OF_POINTS = 50; //Number of data points to be displayed on the graph
     private XYplotSeriesList xyPlotSeriesList;
-    public static final String HR_PLOT = "HR Polar H7";
+    public static final String HR_PLOT = "HR Polar H10";
 
-    private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
-                mConnected = true;
-                invalidateOptionsMenu();
-            } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
-                mConnected = false;
-                invalidateOptionsMenu();
-            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                // Show all the supported services and characteristics on the user interface.
-                registerHeartRateService(mBluetoothLeService.getSupportedGattServices());
-            } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                Integer hr = intent.getIntExtra(BluetoothLeService.EXTRA_DATA, 0);
-                displayData(hr);
-                hrArray.add(hr);
-
-                // Update PLOT
-                xyPlotSeriesList.updateSeries(HR_PLOT, hr);
-                XYSeries hrSeries = new SimpleXYSeries(xyPlotSeriesList.getSeriesFromList
-                        (HR_PLOT), SimpleXYSeries.ArrayFormat.XY_VALS_INTERLEAVED, HR_PLOT);
-                LineAndPointFormatter formatter = xyPlotSeriesList.getFormatterFromList
-                        (HR_PLOT);
-
-                heartRatePlot.clear();
-                heartRatePlot.addSeries(hrSeries, formatter);
-                heartRatePlot.redraw();
-            }
-
-
-        }
-    };
     // TODO: editar esta función para que haga display de los datos
     private void displayData(int intExtra) {
 
@@ -162,23 +148,124 @@ public class LiveActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live);
 
-        //Remove going back button from toolbar
-        View backButton = findViewById(R.id.backButton);
-        ViewGroup parent = (ViewGroup)backButton.getParent();
-        parent.removeView(backButton);
-
-        //Remove profile button from toolbar
-        View profileButton = findViewById(R.id.profile);
-        ViewGroup parent2 = (ViewGroup)profileButton.getParent();
-        parent2.removeView(profileButton);
-
-        // Create instance of Sport Tracker Room DB
-        AppDB = AppDatabase.getDatabase(getApplicationContext());
-
-
         final Intent intent = getIntent();
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+        //deviceId = getIntent().getStringExtra("id");
+        deviceId = "E78BAE13";
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            this.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+
+
+        api = PolarBleApiDefaultImpl.defaultImplementation(this,
+                PolarBleApi.FEATURE_POLAR_SENSOR_STREAMING |
+                        PolarBleApi.FEATURE_BATTERY_INFO |
+                        PolarBleApi.FEATURE_DEVICE_INFO |
+                        PolarBleApi.FEATURE_HR);
+        api.setApiCallback(new PolarBleApiCallback() {
+            @Override
+            public void blePowerStateChanged(boolean b) {
+                Log.d(TAG, "BluetoothStateChanged " + b);
+            }
+
+            @Override
+            public void deviceConnected(@NonNull PolarDeviceInfo s) {
+                Log.d(TAG, "Device connected " + s.deviceId);
+                Toast.makeText(LiveActivity.this, R.string.connected, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void deviceConnecting(@NonNull PolarDeviceInfo polarDeviceInfo) {
+
+            }
+
+            @Override
+            public void deviceDisconnected(@NonNull PolarDeviceInfo s) {
+                Log.d(TAG, "Device disconnected " + s);
+            }
+
+            @Override
+            public void ecgFeatureReady(@NonNull String s) {
+                Log.d(TAG, "ECG Feature ready " + s);
+                streamECG();
+            }
+
+            @Override
+            public void accelerometerFeatureReady(@NonNull String s) {
+                Log.d(TAG, "ACC Feature ready " + s);
+            }
+
+            @Override
+            public void ppgFeatureReady(@NonNull String s) {
+                Log.d(TAG, "PPG Feature ready " + s);
+            }
+
+            @Override
+            public void ppiFeatureReady(@NonNull String s) {
+                Log.d(TAG, "PPI Feature ready " + s);
+            }
+
+            @Override
+            public void biozFeatureReady(@NonNull String s) {
+
+            }
+
+            @Override
+            public void hrFeatureReady(@NonNull String s) {
+                Log.d(TAG, "HR Feature ready " + s);
+
+            }
+
+            @Override
+            public void disInformationReceived(@NonNull String s, @NonNull UUID u, @NonNull String s1) {
+                if (u.equals(UUID.fromString("00002a28-0000-1000-8000-00805f9b34fb"))) {
+                    String msg = "Firmware: " + s1.trim();
+                    Log.d(TAG, "Firmware: " + s + " " + s1.trim());
+                    //textViewFW.append(msg + "\n");
+                }
+            }
+
+            @Override
+            public void batteryLevelReceived(@NonNull String s, int i) {
+                String msg = "ID: " + s + "\nBattery level: " + i;
+                Log.d(TAG, "Battery level " + s + " " + i);
+                Toast.makeText(LiveActivity.this, msg, Toast.LENGTH_LONG).show();
+                //textViewFW.append(msg + "\n");
+            }
+
+            @Override
+            public void hrNotificationReceived(@NonNull String s, @NonNull PolarHrData polarHrData) {
+                Log.d(TAG, "HR " + polarHrData.hr);
+                displayData(polarHrData.hr);
+                hrArray.add(polarHrData.hr);
+
+                // Update PLOT
+                xyPlotSeriesList.updateSeries(HR_PLOT, polarHrData.hr);
+                XYSeries hrSeries = new SimpleXYSeries(xyPlotSeriesList.getSeriesFromList
+                        (HR_PLOT), SimpleXYSeries.ArrayFormat.XY_VALS_INTERLEAVED, HR_PLOT);
+                LineAndPointFormatter formatter = xyPlotSeriesList.getFormatterFromList
+                        (HR_PLOT);
+
+                heartRatePlot.clear();
+                heartRatePlot.addSeries(hrSeries, formatter);
+                heartRatePlot.redraw();
+                //textViewHR.setText(String.valueOf(polarHrData.hr));
+            }
+
+            @Override
+            public void polarFtpFeatureReady(@NonNull String s) {
+                Log.d(TAG, "Polar FTP ready " + s);
+            }
+        });
+
+        try {
+            api.connectToDevice(deviceId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         Button stopRecording = findViewById(R.id.stopRecording);
         stopRecording.setOnClickListener(new View.OnClickListener() {
@@ -187,12 +274,18 @@ public class LiveActivity extends AppCompatActivity implements SensorEventListen
                 Toast.makeText(LiveActivity.this, "Recording stopped", Toast.LENGTH_SHORT).show();
                 // Divide the signal
                 int i=1;
-                while(hrArray.toArray().length > THREE_SEC_SIGNAL_LEN*i++) {
+               /* while(ecg.toArray().length > THREE_SEC_SIGNAL_LEN*i) {
                     // Compress the signal
-                    float[] compressedSignal =compressor((ArrayList<Integer>) hrArray.subList(THREE_SEC_SIGNAL_LEN*(i-1),THREE_SEC_SIGNAL_LEN*i));
+                    float[] compressedSignal =compressor((ArrayList<Integer>) ecg.subList(THREE_SEC_SIGNAL_LEN*(i-1),THREE_SEC_SIGNAL_LEN*i));
+                    i++;
                     // Upload everything in Firebase
-                    recordingRef.child("hr_compressed_data ").setValue(compressedSignal);
-                }
+                    if (compressedSignal != null) {
+               //         recordingRef.child("hr_compressed_data ").setValue(compressedSignal);
+                    }
+                }*/
+                Intent intent = new Intent(LiveActivity.this, ResultsActivity.class);
+              //  intent.putExtra(SIGNAL, preprocessSignal(ecg));
+                startActivity(intent);
             }
         });
 
@@ -229,17 +322,19 @@ public class LiveActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+    /*    registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
-        }
+        }*/
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+/*
         unregisterReceiver(mGattUpdateReceiver);
+*/
     }
 
     @Override
@@ -249,27 +344,37 @@ public class LiveActivity extends AppCompatActivity implements SensorEventListen
         mBluetoothLeService = null;
     }
 
+    private float[] preprocessSignal(ArrayList<Integer> input_sig){
+
+        float[] input_signal = {};
+        long sum = 0;
+        long variance = 0;
+        float[] x = {};
+        int i = 0;
+        Iterator it = input_sig.iterator();
+        while (it.hasNext()){
+            float val = (float) it.next();
+            input_signal[i]=(float) val;
+            sum += val;
+            variance += Math.pow(val,2);
+            i++;
+        }
+        float mean = sum/input_signal.length;
+        float std = (float) Math.sqrt(variance);
+        for(int j=0; j<input_signal.length;j++){
+            input_signal[j]= (input_signal[j]-mean)/std; // signal standardization
+        }
+
+        // Detrend
+        input_signal = detrend(x,input_signal);
+
+        return input_signal;
+    }
+
     private float[] compressor(ArrayList<Integer> input_sig) {
         try {
-            int[] int_input_signal = ArrayUtils.toPrimitiveArray(Arrays.asList(input_sig.toArray(new Integer[0])));
-            float[] input_signal = {};
-            int sum = 0;
-            long variance = 0;
-            float[] x = {};
-            for(int i=0; i<int_input_signal.length;i++){
-                input_signal[i]=(float) int_input_signal[i];
-                sum += int_input_signal[i];
-                x[i]= (float) i;
-                variance += Math.pow(int_input_signal[i],2);
-            }
-            float mean = sum/int_input_signal.length;
-            float std = (float) Math.sqrt(variance);
-            for(int i=0; i<int_input_signal.length;i++){
-                input_signal[i]= (input_signal[i]-mean)/std; // signal standardization
-            }
 
-            //remove trend()
-            input_signal = detrend(x,input_signal);
+            float[] input_signal = preprocessSignal(input_sig);
 
             Context context=getApplicationContext();
             CompressionNn0 model = CompressionNn0.newInstance(context);
@@ -411,23 +516,33 @@ public class LiveActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-    //SQLite
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        int heartRate = (int) event.values[0];
-        hrList.add(heartRate);
-
-        // Save the data when you have a multiple of sizeListToSave
-        if (hrList.size() % sizeListToSave == 0) {
-            SavingHeartRateAsyncTask hrAsyncTask = new SavingHeartRateAsyncTask(AppDB);
-            hrAsyncTask.execute(hrList);
-            hrList.clear();
+    public void streamECG() {
+        if (ecgDisposable == null) {
+            ecgDisposable =
+                    api.requestEcgSettings(deviceId)
+                            .toFlowable()
+                            .flatMap((Function<PolarSensorSetting, Publisher<PolarEcgData>>) sensorSetting -> api.startEcgStreaming(deviceId, sensorSetting.maxSettings()))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    polarEcgData -> {
+                                        Log.d(TAG, "ecg update");
+                                        for (Integer data : polarEcgData.samples) {
+                                            //plotter.sendSingleSample((float) ((float) data / 1000.0));
+                                            ecg.add(data);
+                                            Toast.makeText(LiveActivity.this, "sendSignSample", Toast.LENGTH_SHORT);
+                                        }
+                                    },
+                                    throwable -> {
+                                        Log.e(TAG,
+                                                "" + throwable.getLocalizedMessage());
+                                        ecgDisposable = null;
+                                    },
+                                    () -> Log.d(TAG, "complete")
+                            );
+        } else {
+            // NOTE stops streaming if it is "running"
+            ecgDisposable.dispose();
+            ecgDisposable = null;
         }
-
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 }

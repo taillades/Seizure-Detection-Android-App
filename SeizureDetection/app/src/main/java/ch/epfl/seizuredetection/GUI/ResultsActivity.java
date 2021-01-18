@@ -23,6 +23,7 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import ch.epfl.seizuredetection.R;
 
@@ -36,20 +37,11 @@ public class ResultsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
 
-        //Remove going back button from toolbar
-        View backButton = findViewById(R.id.backButton);
-        ViewGroup parent = (ViewGroup)backButton.getParent();
-        parent.removeView(backButton);
-
-        //Toolbar action to Edit Profile Activity
-        View profileButton = findViewById(R.id.profile);
-        profileButton.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                Intent intent = new Intent(ResultsActivity.this, EditProfileActivity.class);
-                startActivity(intent);
-            }
-        });
+        // Get the Intent that started this activity and extract the string
+    //    Intent intent = getIntent();
+      //  float[] ecg = intent.getFloatArrayExtra(LiveActivity.SIGNAL);
+       // byte[] byteArray = floatArrayToByteArray(ecg);
+       // probabilityToDie = analyseNN0(byteArray);
     }
 
 
@@ -60,7 +52,7 @@ public class ResultsActivity extends AppCompatActivity {
         return buffer.array();
     }
 
-    private void analyseNN0(TensorBuffer byteBufferIn){
+    private float analyseNN0(byte[] byteBufferIn){
         FirebaseCustomRemoteModel remoteModel =
                 new FirebaseCustomRemoteModel.Builder("epilepsy_network").build();
         FirebaseModelDownloadConditions conditions = new FirebaseModelDownloadConditions.Builder()
@@ -95,7 +87,7 @@ public class ResultsActivity extends AppCompatActivity {
         // Sets the probability to have a seizure
         modelOutput.rewind();
         FloatBuffer probabilities = modelOutput.asFloatBuffer();
-        probabilityToDie = probabilities.get(0);
+        return probabilities.get(0);
     }
 
 
