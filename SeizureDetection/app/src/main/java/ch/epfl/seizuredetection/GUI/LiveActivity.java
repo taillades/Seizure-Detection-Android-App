@@ -86,6 +86,7 @@ public class LiveActivity extends AppCompatActivity {
     // Fields related to the Bluetooth connexion
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
+    public static final String EXTRAS_DEVICE_ID = "DEVICE_ID";
     private static int THREE_SEC_SIGNAL_LEN =768;
     private BluetoothLeService mBluetoothLeService;
     //private ServiceConnection mServiceConnection;
@@ -94,7 +95,7 @@ public class LiveActivity extends AppCompatActivity {
     private boolean mConnected; // True if device connected
     private ArrayList<Integer> hrArray = new ArrayList();
     // plot attributes
-    private long startTime = System.currentTimeMillis() / 1000;
+    private long startTime;
     private final static String TAG = LiveActivity.class.getSimpleName();
     // Firebase
     private DatabaseReference recordingRef;
@@ -122,8 +123,11 @@ public class LiveActivity extends AppCompatActivity {
     private void displayData(int intExtra) {
 
         TextView txtBpm = findViewById(R.id.bpm);
-        txtBpm.setText(String.valueOf(intExtra));
+        txtBpm.setText(String.valueOf(intExtra) + " bpm");
         float time = System.currentTimeMillis() / 1000 - startTime;
+        TextView txtSeconds = findViewById(R.id.time);
+        txtSeconds.setText(String.valueOf(time) + " s");
+
 /*        HRseriesBelt.addLast(time, intExtra);
         while (HRseriesBelt.size() > 0 && (time - HRseriesBelt.getX(0).longValue()) > NUMBER_OF_SECONDS) {
             HRseriesBelt.removeFirst();
@@ -151,7 +155,7 @@ public class LiveActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-        //deviceId = getIntent().getStringExtra("id");
+        deviceId = getIntent().getStringExtra(EXTRAS_DEVICE_ID);
         deviceId = "E78BAE13";
 
         if (Build.VERSION.SDK_INT >= 23) {
@@ -164,6 +168,7 @@ public class LiveActivity extends AppCompatActivity {
                         PolarBleApi.FEATURE_BATTERY_INFO |
                         PolarBleApi.FEATURE_DEVICE_INFO |
                         PolarBleApi.FEATURE_HR);
+
         api.setApiCallback(new PolarBleApiCallback() {
             @Override
             public void blePowerStateChanged(boolean b) {
@@ -173,6 +178,7 @@ public class LiveActivity extends AppCompatActivity {
             @Override
             public void deviceConnected(@NonNull PolarDeviceInfo s) {
                 Log.d(TAG, "Device connected " + s.deviceId);
+                startTime = System.currentTimeMillis() / 1000;
                 Toast.makeText(LiveActivity.this, R.string.connected, Toast.LENGTH_SHORT).show();
             }
 
@@ -283,6 +289,7 @@ public class LiveActivity extends AppCompatActivity {
                     recordingRef = profileGetRef.child(userID).child("recordings").child(recID);
 
                     recordingRef.child("hr_data").setValue(hrArray);
+                    recordingRef.child("ecg_data").setValue("hola");
                     // Divide the signal
                     int i = 1;
                     while (ecg.toArray().length > THREE_SEC_SIGNAL_LEN * i) {

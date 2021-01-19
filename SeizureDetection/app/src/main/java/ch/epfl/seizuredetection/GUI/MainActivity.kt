@@ -21,6 +21,7 @@ import android.view.View
 import android.widget.*
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
+import ch.epfl.seizuredetection.GUI.LiveActivity.EXTRAS_DEVICE_ID
 import ch.epfl.seizuredetection.R
 import ch.epfl.seizuredetection.SignalClassifier
 import com.google.android.gms.tasks.Task
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity() {
     private var recordingKeySaved: String? = null
     val USER_ID: String? = "USER_ID"
     private var play: ImageButton? = null
+    private var deviceID: EditText? = null
     private var yesButton: Button? = null
     private var bluetooth: ImageButton? = null
     private var predictedTextView: TextView? = null
@@ -53,6 +55,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var remoteConfig: FirebaseRemoteConfig
     private val BLE_CONNECTION = 1
     val EXTRAS_DEVICE_NAME = "DEVICE_NAME"
+    val EXTRAS_DEVIDE_ID = "DEVICE_ID"
     val EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS"
     private var mDeviceAddress: String? = null
 
@@ -60,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // Setup view instances
-
+        deviceID = findViewById(R.id.textDeviceID)
         play = findViewById<ImageButton>(R.id.play);
         play!!.setOnClickListener(View.OnClickListener {
             val intent: Intent = getIntent()
@@ -82,6 +85,8 @@ class MainActivity : AppCompatActivity() {
                     RECORDING_ID = recordingKeySaved.toString()
                     intentStartLive.putExtra(RECORDING_ID, recordingKeySaved)
                     intentStartLive.putExtra(EXTRAS_DEVICE_ADDRESS, mDeviceAddress)
+                    var idd = deviceID!!.text
+                    intentStartLive.putExtra(EXTRAS_DEVICE_ID, deviceID!!.text)
                     startActivity(intentStartLive)
                 }
             })
