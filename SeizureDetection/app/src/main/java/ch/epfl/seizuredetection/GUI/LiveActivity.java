@@ -281,18 +281,17 @@ public class LiveActivity extends AppCompatActivity {
                 recordingRef.child("hr_data").setValue(hrArray);
                 // Divide the signal
                 int i=1;
-                /*while(ecg.toArray().length > THREE_SEC_SIGNAL_LEN*i) {
+                while(ecg.toArray().length > THREE_SEC_SIGNAL_LEN*i) {
                     // Compress the signal
                     float[] compressedSignal =compressor((ArrayList<Integer>) ecg.subList(THREE_SEC_SIGNAL_LEN*(i-1),THREE_SEC_SIGNAL_LEN*i));
                     i++;
                     // Upload everything in Firebase
                     if (compressedSignal != null) {
-               //         recordingRef.child("hr_compressed_data ").setValue(compressedSignal);
+                        recordingRef.child("hr_compressed_data ").setValue(compressedSignal);
                     }
-                }*/
-                BluetoothLeService.close();
+                }
                 Intent intent = new Intent(LiveActivity.this, ResultsActivity.class);
-                intent.putExtra(SIGNAL, preprocessSignal(ecg));
+                intent.putExtra(SIGNAL, preprocessSignal((ArrayList<Integer>) ecg.subList(0,767)));
                 startActivity(intent);
             }
         });

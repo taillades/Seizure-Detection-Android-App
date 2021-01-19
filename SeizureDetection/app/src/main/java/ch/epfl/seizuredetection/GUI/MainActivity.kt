@@ -61,15 +61,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         // Setup view instances
 
-        bluetooth = findViewById(R.id.bluetooth)
-
-        // Setup YES button
-        bluetooth?.setOnClickListener {
-            val intent = Intent(this, DeviceScanActivity::class.java)
-            startActivityForResult(intent, BLE_CONNECTION)
-
-        }
-
         play = findViewById<ImageButton>(R.id.play);
         play!!.setOnClickListener(View.OnClickListener {
             val intent: Intent = getIntent()
