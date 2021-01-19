@@ -1,10 +1,7 @@
 package ch.epfl.seizuredetection.GUI;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -13,7 +10,6 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,7 +17,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,11 +28,7 @@ import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-import ch.epfl.seizuredetection.Data.AppDatabase;
-import ch.epfl.seizuredetection.Data.Constant;
-import ch.epfl.seizuredetection.Data.ProfileEntity;
 import ch.epfl.seizuredetection.POJO.Profile;
 import ch.epfl.seizuredetection.R;
 import ch.epfl.seizuredetection.ml.CompressionNn0;
@@ -50,7 +41,6 @@ public class LoginActivity extends AppCompatActivity {
     Button LoginButton;
     String ID;
     TextView SignUp;
-    AppDatabase db;
 
     public static void updateUI(Profile user) {
         editTextEmail.setText(user.getUsername());
@@ -71,9 +61,11 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
                             startActivity(intent);
                         } else {
-                            Toast.makeText(LoginActivity.this, "Authentication with Firebase failed.", Toast.LENGTH_SHORT).show();
-                            //loginSQL(email, password);
-
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            editTextPassword.setError("Wrong email or password");
+                            editTextPassword.requestFocus();
+                            Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -83,21 +75,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        //Remove going back button from toolbar
-        View backButton = findViewById(R.id.backButton);
-        ViewGroup parent = (ViewGroup)backButton.getParent();
-        parent.removeView(backButton);
-
-        //Remove profile button from toolbar
-        View profileButton = findViewById(R.id.profile);
-        ViewGroup parent2 = (ViewGroup)profileButton.getParent();
-        parent2.removeView(profileButton);
-
-        //Call SQLite db
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, Constant.BD_NAME)
-                .allowMainThreadQueries()
-                .build();
 
         mAuth = FirebaseAuth.getInstance(); // Auth database instance
         editTextEmail = findViewById(R.id.LoginEmail);
@@ -143,18 +120,4 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
      }
-
-//     private void loginSQL(String email, String password){
-//      String pwd = db.profileDAO().getPwd(email);
-//      Toast.makeText(LoginActivity.this, pwd +  " + " + password, Toast.LENGTH_SHORT).show();
-//      if (pwd.equals(password)){
-//          Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//          Toast.makeText(LoginActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
-//          startActivity(intent);
-//      }
-//      else{
-//          editTextPassword.setError("Wrong email or password");
-//          editTextPassword.requestFocus();
-//      }
-//     }
 }

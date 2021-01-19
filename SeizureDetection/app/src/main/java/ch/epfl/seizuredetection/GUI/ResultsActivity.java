@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -15,11 +17,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions;
 import com.google.firebase.ml.common.modeldownload.FirebaseModelManager;
 import com.google.firebase.ml.custom.FirebaseCustomRemoteModel;
+import com.google.firebase.ml.custom.FirebaseModelInputs;
 
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -31,24 +35,29 @@ public class ResultsActivity extends AppCompatActivity {
 
     private Interpreter interpreter;
     private float probabilityToDie = 0;
+    private String TAG = "resultsActivity";
+    private TextView mStrokeResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
+        mStrokeResults = findViewById(R.id.strokeResults);
 
         // Get the Intent that started this activity and extract the string
-    //    Intent intent = getIntent();
-      //  float[] ecg = intent.getFloatArrayExtra(LiveActivity.SIGNAL);
-       // byte[] byteArray = floatArrayToByteArray(ecg);
-       // probabilityToDie = analyseNN0(byteArray);
+        Bundle bundle = getIntent().getExtras();
+        float[] ecg = bundle.getFloatArray(LiveActivity.SIGNAL);
+        byte[] byteArray = floatArrayToByteArray(ecg);
+        probabilityToDie = analyseNN0(byteArray);
+        mStrokeResults.setText(String.valueOf(probabilityToDie));
     }
-
 
     private static byte[] floatArrayToByteArray(float[] input)
     {
         final ByteBuffer buffer = ByteBuffer.allocate(Float.BYTES * input.length);
-        buffer.asFloatBuffer().put(input);
+        for(int i=1; i<input.length;i++){
+            buffer.putFloat(input[i]);
+        }
         return buffer.array();
     }
 
@@ -66,7 +75,7 @@ public class ResultsActivity extends AppCompatActivity {
                     }
                 });
 
-
+        remoteModel = new FirebaseCustomRemoteModel.Builder("epilepsy_network").build();
         FirebaseModelManager.getInstance().getLatestModelFile(remoteModel)
                 .addOnCompleteListener(new OnCompleteListener<File>() {
 
@@ -82,7 +91,12 @@ public class ResultsActivity extends AppCompatActivity {
 
         int bufferSize = 10 * Float.SIZE / Byte.SIZE;
         ByteBuffer modelOutput = ByteBuffer.allocateDirect(bufferSize).order(ByteOrder.nativeOrder());
-        interpreter.run(byteBufferIn, modelOutput);
+        try{
+            interpreter.run(byteBufferIn, modelOutput);
+        }catch(Exception e){
+            Log.e(TAG, e.getStackTrace().toString());
+        }
+
 
         // Sets the probability to have a seizure
         modelOutput.rewind();

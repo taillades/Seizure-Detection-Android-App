@@ -272,9 +272,16 @@ public class LiveActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(LiveActivity.this, "Recording stopped", Toast.LENGTH_SHORT).show();
+
+                // Get recording information from Firebase
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference profileGetRef = database.getReference("profiles");
+                recordingRef = profileGetRef.child(userID).child("recordings").child(recID);
+
+                recordingRef.child("hr_data").setValue(hrArray);
                 // Divide the signal
                 int i=1;
-               /* while(ecg.toArray().length > THREE_SEC_SIGNAL_LEN*i) {
+                /*while(ecg.toArray().length > THREE_SEC_SIGNAL_LEN*i) {
                     // Compress the signal
                     float[] compressedSignal =compressor((ArrayList<Integer>) ecg.subList(THREE_SEC_SIGNAL_LEN*(i-1),THREE_SEC_SIGNAL_LEN*i));
                     i++;
@@ -283,8 +290,9 @@ public class LiveActivity extends AppCompatActivity {
                //         recordingRef.child("hr_compressed_data ").setValue(compressedSignal);
                     }
                 }*/
+                BluetoothLeService.close();
                 Intent intent = new Intent(LiveActivity.this, ResultsActivity.class);
-              //  intent.putExtra(SIGNAL, preprocessSignal(ecg));
+                intent.putExtra(SIGNAL, preprocessSignal(ecg));
                 startActivity(intent);
             }
         });
@@ -346,15 +354,15 @@ public class LiveActivity extends AppCompatActivity {
 
     private float[] preprocessSignal(ArrayList<Integer> input_sig){
 
-        float[] input_signal = {};
+        float[] input_signal = new float[input_sig.size()+1];
         long sum = 0;
         long variance = 0;
         float[] x = {};
         int i = 0;
-        Iterator it = input_sig.iterator();
+        Iterator<Integer> it = input_sig.iterator();
         while (it.hasNext()){
-            float val = (float) it.next();
-            input_signal[i]=(float) val;
+            Integer val = it.next();
+            input_signal[i] = (float) val;
             sum += val;
             variance += Math.pow(val,2);
             i++;
