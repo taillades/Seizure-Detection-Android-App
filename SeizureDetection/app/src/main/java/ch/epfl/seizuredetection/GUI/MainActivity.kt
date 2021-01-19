@@ -77,7 +77,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onComplete(databaseError: DatabaseError?, b: Boolean, dataSnapshot: DataSnapshot?) {
-                    showToast("Recording saved successfully")
                     val intentStartLive = Intent(this@MainActivity, LiveActivity::class.java)
                     intentStartLive.putExtra(USER_ID, userID)
                     RECORDING_ID = recordingKeySaved.toString()

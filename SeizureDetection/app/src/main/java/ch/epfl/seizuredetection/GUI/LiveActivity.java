@@ -271,28 +271,35 @@ public class LiveActivity extends AppCompatActivity {
         stopRecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(LiveActivity.this, "Recording stopped", Toast.LENGTH_SHORT).show();
-
-                // Get recording information from Firebase
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference profileGetRef = database.getReference("profiles");
-                recordingRef = profileGetRef.child(userID).child("recordings").child(recID);
-
-                recordingRef.child("hr_data").setValue(hrArray);
-                // Divide the signal
-                int i=1;
-                while(ecg.toArray().length > THREE_SEC_SIGNAL_LEN*i) {
-                    // Compress the signal
-                    float[] compressedSignal =compressor((ArrayList<Integer>) ecg.subList(THREE_SEC_SIGNAL_LEN*(i-1),THREE_SEC_SIGNAL_LEN*i));
-                    i++;
-                    // Upload everything in Firebase
-                    if (compressedSignal != null) {
-                        recordingRef.child("hr_compressed_data ").setValue(compressedSignal);
-                    }
+                if (ecg.toArray().length < 767) {
+                    Toast.makeText(LiveActivity.this, "Too short signal: "+String.valueOf(ecg.toArray().length), Toast.LENGTH_SHORT).show();
                 }
-                Intent intent = new Intent(LiveActivity.this, ResultsActivity.class);
-                intent.putExtra(SIGNAL, preprocessSignal((ArrayList<Integer>) ecg.subList(0,767)));
-                startActivity(intent);
+                else{
+                    Toast.makeText(LiveActivity.this, "Recording stopped", Toast.LENGTH_SHORT).show();
+
+                    // Get recording information from Firebase
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference profileGetRef = database.getReference("profiles");
+                    recordingRef = profileGetRef.child(userID).child("recordings").child(recID);
+
+                    recordingRef.child("hr_data").setValue(hrArray);
+                    // Divide the signal
+                    int i = 1;
+                    while (ecg.toArray().length > THREE_SEC_SIGNAL_LEN * i) {
+                        // Compress the signal
+                        float[] compressedSignal = compressor(ecg.subList(THREE_SEC_SIGNAL_LEN * (i - 1), THREE_SEC_SIGNAL_LEN * i));
+                        i++;
+                        // Upload everything in Firebase
+                        if (compressedSignal != null) {
+                         //   recordingRef.child("hr_compressed_data ").setValue(compressedSignal);
+                        }
+                    }
+                    Intent intent = new Intent(LiveActivity.this, ResultsActivity.class);
+                    if (ecg.toArray().length > 768) {
+                        intent.putExtra(SIGNAL, preprocessSignal(ecg.subList(0, 768)));
+                    }
+                    startActivity(intent);
+                }
             }
         });
 
@@ -351,11 +358,14 @@ public class LiveActivity extends AppCompatActivity {
         mBluetoothLeService = null;
     }
 
-    private float[] preprocessSignal(ArrayList<Integer> input_sig){
+    private float[] preprocessSignal(List<Integer> input_sig){
 
-        float[] input_signal = new float[input_sig.size()+1];
+        float[] input_signal = new float[input_sig.size()];
         long sum = 0;
         long variance = 0;
+            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 768}, DataType.FLOAT32);
+            inputFeature0.loadArray(input_signal);
+            // Runs model inference and gets resul
         float[] x = {};
         int i = 0;
         Iterator<Integer> it = input_sig.iterator();
@@ -378,7 +388,7 @@ public class LiveActivity extends AppCompatActivity {
         return input_signal;
     }
 
-    private float[] compressor(ArrayList<Integer> input_sig) {
+    private float[] compressor(List<Integer> input_sig) {
         try {
 
             float[] input_signal = preprocessSignal(input_sig);
@@ -532,7 +542,7 @@ public class LiveActivity extends AppCompatActivity {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(
                                     polarEcgData -> {
-                                        Log.d(TAG, "ecg update");
+                                        Log.d(TAG, "ecg update, len is "+String.valueOf(ecg.toArray().length));
                                         for (Integer data : polarEcgData.samples) {
                                             //plotter.sendSingleSample((float) ((float) data / 1000.0));
                                             ecg.add(data);
