@@ -180,6 +180,8 @@ public class LiveActivity extends AppCompatActivity {
             public void deviceConnected(@NonNull PolarDeviceInfo s) {
                 Log.d(TAG, "Device connected " + s.deviceId);
                 startTime = System.currentTimeMillis() / 1000;
+                TextView txtModel = findViewById(R.id.Model);
+                txtModel.setText("Polar H10 ID:" + s.deviceId);
                 Toast.makeText(LiveActivity.this, R.string.connected, Toast.LENGTH_SHORT).show();
             }
 

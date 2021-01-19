@@ -1,5 +1,8 @@
 package ch.epfl.seizuredetection.GUI;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -51,6 +54,15 @@ public class ResultsActivity extends AppCompatActivity {
         float[] ecg = bundle.getFloatArray(LiveActivity.SIGNAL);
         byte[] byteArray = floatArrayToByteArray(ecg);
         probabilityToDie = analyseNN0(byteArray);
+        if(probabilityToDie > 0){
+            try {
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.setData(Uri.parse("tel:144"));
+                startActivity(callIntent);
+            } catch (ActivityNotFoundException activityException) {
+                Log.e("Calling a Phone Number", "Call failed", activityException);
+            }
+        }
         mStrokeResults.setText(String.valueOf(probabilityToDie));
     }
 
