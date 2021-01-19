@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "118515744503",
+    "firebase_url": "https://seizuredetection-266ed.firebaseio.com",
+    "project_id": "seizuredetection-266ed",
+    "storage_bucket": "seizuredetection-266ed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118515744503:android:ae70800d80d85503609df2",
+        "android_client_info": {
+          "package_name": "ch.epfl.seizuredetection"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "118515744503-sd20d6bcururl88o6l8nkhuu4ijldmat.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxkUAhmFE8L1hy9N4lHcpwhpxoztuVi7g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "118515744503-sd20d6bcururl88o6l8nkhuu4ijldmat.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

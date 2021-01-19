@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context=".GUI.LoginActivity">
+
+    <include layout="@layout/toolbar"/>
+
+    <Button
+        android:id="@+id/LoginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="13"
+        android:background="#84DCC6"
+        android:text="Log in"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="30dp"
+        android:layout_centerInParent="true"
+        />
+
+    <EditText
+        android:id="@+id/LoginEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_above="@id/LoginPwd"
+        android:hint="E-mail"
+        android:inputType="textPersonName"
+        android:layout_centerInParent="true"/>
+
+    <EditText
+        android:id="@+id/LoginPwd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_above="@id/LoginButton"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:layout_centerInParent="true"/>
+
+    <TextView
+        android:id="@+id/SignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/LoginButton"
+        android:layout_centerInParent="true"
+        android:paddingTop="10dp"
+        android:text="Don't have an account? Sign up" />
+
+
+</RelativeLayout>

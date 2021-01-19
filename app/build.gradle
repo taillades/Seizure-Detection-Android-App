@@ -1,0 +1,80 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.firebase.firebase-perf'
+
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+
+    defaultConfig {
+        applicationId "ch.epfl.seizuredetection"
+        minSdkVersion 23
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    buildFeatures {
+        mlModelBinding true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+}
+
+dependencies {
+
+    // Support Libraries
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.core:core-ktx:1.3.2'
+    //noinspection GradleDependency
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'org.tensorflow:tensorflow-lite-task-vision:0.0.0-nightly'
+    implementation 'org.tensorflow:tensorflow-lite-task-text:0.0.0-nightly'
+    implementation 'org.tensorflow:tensorflow-lite-support:0.0.0-nightly'
+
+    // Task API
+    implementation 'com.google.android.gms:play-services-tasks:17.2.0'
+    implementation platform('com.google.firebase:firebase-bom:26.0.0')
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'com.google.firebase:firebase-database:19.6.0'
+    implementation 'com.google.firebase:firebase-storage:19.2.1'
+    implementation 'com.google.firebase:firebase-auth:20.0.2'
+    implementation 'com.androidplot:androidplot-core:1.5.7'
+    implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0-rc1'
+    implementation 'org.tensorflow:tensorflow-lite-gpu:2.2.0'
+    testImplementation 'junit:junit:4.13.1'
+    implementation 'org.tensorflow:tensorflow-lite:2.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.4'
+    implementation platform('com.google.firebase:firebase-bom:26.0.0')
+    implementation 'com.google.firebase:firebase-perf:19.1.0'
+    implementation 'com.google.firebase:firebase-config-ktx:20.0.2'
+    implementation files('libs/polar-ble-sdk.aar')
+    // Only needed if FEATURE_POLAR_FILE_TRANSFER used
+    implementation files('libs/polar-protobuf-release.aar')
+    // Only needed if FEATURE_POLAR_FILE_TRANSFER used
+    implementation 'commons-io:commons-io:2.8.0'
+    // Only needed if FEATURE_POLAR_FILE_TRANSFER used
+    //implementation 'com.google.protobuf:protobuf-java:3.14.0'
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+}
