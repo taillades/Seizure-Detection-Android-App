@@ -89,7 +89,7 @@ public class LiveActivity extends AppCompatActivity {
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
     public static final String EXTRAS_DEVICE_ID = "DEVICE_ID";
     private static int THREE_SEC_SIGNAL_LEN =768;
-    private BluetoothLeService mBluetoothLeService;
+    //private BluetoothLeService mBluetoothLeService;
     //private ServiceConnection mServiceConnection;
     private String mDeviceName; // Name of the device
     private String mDeviceAddress; // Address of the device
@@ -139,24 +139,24 @@ public class LiveActivity extends AppCompatActivity {
 
     }
 
-    private static IntentFilter makeGattUpdateIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
-        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
-        return intentFilter;
-    }
+//    private static IntentFilter makeGattUpdateIntentFilter() {
+//        final IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
+//        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
+//        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
+//        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+//        return intentFilter;
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live);
 
-        final Intent intent = getIntent();
-        mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
-        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-        deviceId = getIntent().getStringExtra(EXTRAS_DEVICE_ID);
+        Bundle bundle = getIntent().getExtras();
+        //mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
+        //mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+        deviceId = bundle.getString(EXTRAS_DEVICE_ID);
         deviceId = "E78BAE13";
 
         if (Build.VERSION.SDK_INT >= 23) {
@@ -299,7 +299,11 @@ public class LiveActivity extends AppCompatActivity {
                         i++;
                         // Upload everything in Firebase
                         if (compressedSignal != null) {
-                         //   recordingRef.child("hr_compressed_data ").setValue(compressedSignal);
+                            ArrayList<Float> result = new ArrayList<Float>(compressedSignal.length);
+                            for (float f : compressedSignal) {
+                                result.add(Float.valueOf(f));
+                            }
+                         recordingRef.child("hr_compressed_data ").setValue(result);
                         }
                     }
                     Intent intent = new Intent(LiveActivity.this, ResultsActivity.class);
@@ -317,11 +321,11 @@ public class LiveActivity extends AppCompatActivity {
 /*
         getSupportActionBar().setTitle(mDeviceName);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
-        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
-        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (checkSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_DENIED || checkSelfPermission("android.permission.ACCESS_COARSE_LOCATION") == PackageManager.PERMISSION_DENIED || checkSelfPermission("android.permission.INTERNET") == PackageManager.PERMISSION_DENIED)) {
-            requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION", "android.permission.INTERNET"}, 0);
-        }
+//        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+//        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (checkSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_DENIED || checkSelfPermission("android.permission.ACCESS_COARSE_LOCATION") == PackageManager.PERMISSION_DENIED || checkSelfPermission("android.permission.INTERNET") == PackageManager.PERMISSION_DENIED)) {
+//            requestPermissions(new String[]{"android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION", "android.permission.INTERNET"}, 0);
+//        }
 
         //Configure HR Plot
         heartRatePlot = findViewById(R.id.HRplot);
@@ -362,8 +366,8 @@ public class LiveActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mServiceConnection);
-        mBluetoothLeService = null;
+        //unbindService(mServiceConnection);
+        //mBluetoothLeService = null;
     }
 
     private float[] preprocessSignal(List<Integer> input_sig){
@@ -488,53 +492,53 @@ public class LiveActivity extends AppCompatActivity {
     // Demonstrates how to iterate through the supported GATT Services/Characteristics.
     // In this sample, we populate the data structure that is bound to the ExpandableListView
     // on the UI.
-    private void registerHeartRateService(
-            List<BluetoothGattService> gattServices) {
-        if (gattServices == null) return;
-        String uuid = null;
-        // Loops through available GATT Services.
-        for (BluetoothGattService gattService : gattServices) {
-            List<BluetoothGattCharacteristic> gattCharacteristics =
-                    gattService.getCharacteristics();
-            // Loops through available Characteristics.
-            for (BluetoothGattCharacteristic
-                    gattCharacteristic : gattCharacteristics) {
-                uuid = gattCharacteristic.getUuid().toString();
-                // Find heart rate measurement (0x2A37)
-                if (SampleGattAttributes.lookup(uuid, "unknown")
-                        .equals("Heart Rate Measurement")) {
-                    Log.i(TAG, "Registering for HR measurement");
-                    mBluetoothLeService.setCharacteristicNotification(
-                            gattCharacteristic, true);
-                }
-            }
-        }
-    }
-
-    // Code to manage Service lifecycle.
-    private final ServiceConnection mServiceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
-            if (!mBluetoothLeService.initialize()) {
-                Log.e(TAG, "Unable to initialize Bluetooth");
-                finish();
-            }
-            // Automatically connects to the device upon successful start-up initialization.
-            mBluetoothLeService.connect(mDeviceAddress);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            mBluetoothLeService = null;
-        }
-    };
-
-    public void stopRecording(View view){
-
-
-    }
+//    private void registerHeartRateService(
+//            List<BluetoothGattService> gattServices) {
+//        if (gattServices == null) return;
+//        String uuid = null;
+//        // Loops through available GATT Services.
+//        for (BluetoothGattService gattService : gattServices) {
+//            List<BluetoothGattCharacteristic> gattCharacteristics =
+//                    gattService.getCharacteristics();
+//            // Loops through available Characteristics.
+//            for (BluetoothGattCharacteristic
+//                    gattCharacteristic : gattCharacteristics) {
+//                uuid = gattCharacteristic.getUuid().toString();
+//                // Find heart rate measurement (0x2A37)
+//                if (SampleGattAttributes.lookup(uuid, "unknown")
+//                        .equals("Heart Rate Measurement")) {
+//                    Log.i(TAG, "Registering for HR measurement");
+//                    mBluetoothLeService.setCharacteristicNotification(
+//                            gattCharacteristic, true);
+//                }
+//            }
+//        }
+//    }
+//
+//    // Code to manage Service lifecycle.
+//    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+//
+//        @Override
+//        public void onServiceConnected(ComponentName componentName, IBinder service) {
+//            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
+//            if (!mBluetoothLeService.initialize()) {
+//                Log.e(TAG, "Unable to initialize Bluetooth");
+//                finish();
+//            }
+//            // Automatically connects to the device upon successful start-up initialization.
+//            mBluetoothLeService.connect(mDeviceAddress);
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName componentName) {
+//            mBluetoothLeService = null;
+//        }
+//    };
+//
+//    public void stopRecording(View view){
+//
+//
+//    }
 
     public void streamECG() {
         if (ecgDisposable == null) {
