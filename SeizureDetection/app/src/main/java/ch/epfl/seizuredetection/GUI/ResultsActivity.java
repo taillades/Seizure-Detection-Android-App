@@ -1,15 +1,14 @@
 package ch.epfl.seizuredetection.GUI;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -17,32 +16,35 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions;
 import com.google.firebase.ml.common.modeldownload.FirebaseModelManager;
 import com.google.firebase.ml.custom.FirebaseCustomRemoteModel;
-import com.google.firebase.ml.custom.FirebaseModelInputs;
 
 import org.tensorflow.lite.Interpreter;
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 
 import ch.epfl.seizuredetection.R;
 
 public class ResultsActivity extends AppCompatActivity {
 
     private Interpreter interpreter;
-    private float probabilityToDie = 0;
+    private float probabilityToDie = -1;
     private String TAG = "resultsActivity";
     private TextView mStrokeResults;
+    private Button mAccept;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
         mStrokeResults = findViewById(R.id.strokeResults);
+        mAccept = findViewById(R.id.AcceptButton);
+        mAccept.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Toast.makeText(ResultsActivity.this, "Accept your heart like it is", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ResultsActivity.this, "And don't eat too much cholesterol", Toast.LENGTH_SHORT).show();
+            }});
 
         // Get the Intent that started this activity and extract the string
         Bundle bundle = getIntent().getExtras();
@@ -101,6 +103,7 @@ public class ResultsActivity extends AppCompatActivity {
         // Sets the probability to have a seizure
         modelOutput.rewind();
         FloatBuffer probabilities = modelOutput.asFloatBuffer();
+        Toast.makeText(ResultsActivity.this, "Signal was analysed", Toast.LENGTH_SHORT).show();
         return probabilities.get(0);
     }
 
