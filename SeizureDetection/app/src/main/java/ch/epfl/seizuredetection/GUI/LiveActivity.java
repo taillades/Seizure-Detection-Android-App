@@ -62,6 +62,7 @@ import ch.epfl.seizuredetection.ml.CompressionNn0;
 import static android.graphics.Color.RED;
 import static android.graphics.Color.TRANSPARENT;
 
+import ch.epfl.seizuredetection.signalProcessing.LinearRegression;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Function;
@@ -368,12 +369,12 @@ public class LiveActivity extends AppCompatActivity {
     private float[] preprocessSignal(List<Integer> input_sig){
 
         float[] input_signal = new float[input_sig.size()];
+        float[] x = new float[input_sig.size()];
         long sum = 0;
         long variance = 0;
             TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 768}, DataType.FLOAT32);
             inputFeature0.loadArray(input_signal);
             // Runs model inference and gets resul
-        float[] x = {};
         int i = 0;
         Iterator<Integer> it = input_sig.iterator();
         while (it.hasNext()){
@@ -381,6 +382,7 @@ public class LiveActivity extends AppCompatActivity {
             input_signal[i] = (float) val;
             sum += val;
             variance += Math.pow(val,2);
+            x[i]=i;
             i++;
         }
         float mean = sum/input_signal.length;
@@ -421,24 +423,18 @@ public class LiveActivity extends AppCompatActivity {
 
     public static float[] detrend(float[] x, float[] y) {
 
-        // TO DO !!!!
-
-     /*   if (x.length != y.length)
+       if (x.length != y.length)
             throw new IllegalArgumentException("The x and y data elements needs to be of the same length");
 
-        SimpleRegression regression = new SimpleRegression();
+        LinearRegression regression = new LinearRegression(x,y);
 
-        for (int i = 0; i < x.length; i++) {
-            regression.addData(x[i], y[i]);
-        }
-
-        double slope = regression.getSlope();
-        double intercept = regression.getIntercept();
+        double slope = regression.slope();
+        double intercept = regression.intercept();
 
         for (int i = 0; i < x.length; i++) {
             //y -= intercept + slope * x
             y[i] -= intercept + (x[i] * slope);
-        }*/
+        }
         return y;
     }
 
