@@ -14,11 +14,13 @@ Electrocardiography (ECG) data in µV. Default epoch for timestamp is 1.1.2000
 3. Register Activity: click "Join"
 4. Login Activity: click "Login"
 5. Main Activity: make sure you are wearing the H10 Polar sensor and that the firmware version is at least 3.0.35
-6. Main Activity: click the play button to start recording
-7. LiveActivity: wait until it connects to the sensor and starts recording. This should take about 3s. If it does not connect, wet the sensor and try again.
-8. Live Activity: when you are satisfied with the amount of data recorded (at least 3s but we recommend 9s), press the "Stop recording" button
-9. ResultActivity: the application will compute the probability of having a seizure
-10. ResultActivity: in case the probability is more than zero and the application is run on a smartphone, it will dial the number to call an ambulance
+6. MainActivity: choose the name of the device. It is written on the top of the sensor.
+7. MainActivity: choose the compression rate between 2, 4 or 6 (recommended).
+8. Main Activity: click the play button to start recording
+9. LiveActivity: wait until it connects to the sensor and starts recording. This should take about 3s. If it does not connect, wet the sensor and try again.
+10. Live Activity: when you are satisfied with the amount of data recorded (at least 3s but we recommend 9s), press the "Stop recording" button
+11. ResultActivity: the application will compute the probability of having a seizure
+12. ResultActivity: in case the probability is more than zero and the application is run on a smartphone, it will dial the number to call an ambulance
 
 Note: profile info can be changed clicking on the button at the top right of the MainActivity.
 
