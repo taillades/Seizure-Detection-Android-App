@@ -22,6 +22,10 @@ Electrocardiography (ECG) data in µV. Default epoch for timestamp is 1.1.2000
 
 Note: profile info can be changed clicking on the button at the top right of the MainActivity.
 
+## Support
+
+y.martin@epfl.ch, ana.morenomartinez@epfl.ch, maria.medinahernandez@epfl.ch
+
 ## Authors
 
 This application was developped by Ana Moreno Martínez, Yves Martin and María José Medina. It is based on the work of Ahmed Kooli for his semester project "ECG Annotator System for Evaluation of Cardiovascular Anomalies".
