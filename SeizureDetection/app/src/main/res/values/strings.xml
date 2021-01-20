@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">SeizureDetection</string>
+    <string name="prediction_text_placeholder">prediction_text_placeholder</string>
+    <string name="yes_button_text">Compute signal</string>
+    <string name="classification_error_message">Error while classifying the signal</string>
+    <string name="photo_upload_failed">Error uploading the image</string>
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="label_data">Data:</string>
+    <string name="label_device_address">Device address:</string>
+    <string name="label_state">State:</string>
+    <string name="no_data">No data</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="title_devices">BLE Device Scan</string>
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+
+    <string name="unknown_device">Unknown device</string>
+    <string name="unknown_characteristic">Unknown characteristic</string>
+    <string name="unknown_service">Unknown service</string>
+
+    <!-- Menu items -->
+    <string name="menu_connect">Connect</string>
+    <string name="menu_disconnect">Disconnect</string>
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+    <string name="hr_belt">HR belt</string>
+
+    <!-- Strings activity_live layout -->
+    <string name="bpm">bpm</string>
+    <string name="time">s</string>
+    <string name="sensor_model">Polar H7 CF4F6013</string>
+    <string name="heart_rate">Heart Rate (bpm)</string>
+    <string name="save_recording_success">Recording saved successfully</string>
+
+    <!-- Strings activity_results layout -->
+    <string name="stroke_text">chance of having a seizure</string>
+    <string name="results">Your results</string>
+
+    <!-- For the spinner for dompression rate -->
+    <string-array name="rate_array">
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GUI.EditProfileActivity">
+
+    <include layout="@layout/toolbar"/>
+
+    <TextView
+        android:id="@+id/EditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/EmailText"
+        android:text="Edit your profile"
+        android:textStyle="bold"
+        android:textSize="40sp"
+        android:paddingBottom="40dp"
+        android:layout_alignStart="@id/Email" />
+
+    <TextView
+        android:id="@+id/EmailText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/Email"
+        android:text="E-mail:"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_alignStart="@id/Email" />
+
+    <EditText
+        android:id="@+id/Email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/Layout"
+        android:ems="15"
+        android:hint="E-mail"
+        android:inputType="textPersonName"
+        android:layout_centerInParent="true"/>
+
+        <LinearLayout
+            android:id="@+id/Layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_above="@id/PwdText"
+            android:layout_alignStart="@id/Email"
+            android:paddingTop="10dp" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/HeightText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Height:"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:layout_alignStart="@id/Height" />
+
+                    <EditText
+                        android:id="@+id/Height"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="7"
+                        android:layout_above="@id/WeightText"
+                        android:hint="Height (cm)"
+                        android:inputType="number"
+                        android:layout_centerInParent="true"/>
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/WeightText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@id/Weight"
+                    android:text="Weight:"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_alignStart="@id/Height" />
+
+                <EditText
+                    android:id="@+id/Weight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="7"
+                    android:layout_above="@id/PwdText"
+                    android:hint="Weight (kg)"
+                    android:inputType="numberDecimal"
+                    android:layout_centerInParent="true"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+    <TextView
+        android:id="@+id/PwdText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New password:"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:paddingTop="10dp"
+        android:layout_centerInParent="true"
+        android:layout_alignStart="@id/Pwd" />
+
+    <EditText
+        android:id="@+id/Pwd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/PwdText"
+        android:ems="15"
+        android:inputType="textPassword"
+        android:layout_centerInParent="true"/>
+
+    <TextView
+        android:id="@+id/RepeatPwdText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Pwd"
+        android:text="Repeat new password:"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:paddingTop="10dp"
+        android:layout_alignStart="@id/Pwd" />
+
+    <EditText
+        android:id="@+id/RepeatPwd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/RepeatPwdText"
+        android:ems="15"
+        android:inputType="textPassword"
+        android:layout_centerInParent="true"/>
+
+    <Button
+        android:id="@+id/SaveChanges"
+        android:layout_width="290dp"
+        android:layout_height="wrap_content"
+        android:background="#84DCC6"
+        android:text="Save Changes"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:textSize="25sp"
+        android:layout_marginTop="150dp"
+        android:layout_below="@id/Pwd"
+        android:layout_centerInParent="true"
+        />
+
+
+</RelativeLayout>
