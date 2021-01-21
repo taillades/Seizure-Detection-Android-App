@@ -373,7 +373,7 @@ public class LiveActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mBluetoothLeService = null;
+        api.shutDown();
     }
 
     private float[] preprocessSignal(List<Integer> input_sig) {
@@ -587,6 +587,8 @@ public class LiveActivity extends AppCompatActivity {
 
 
     }*/
+
+
 
     public void streamECG() {
         if (ecgDisposable == null) {

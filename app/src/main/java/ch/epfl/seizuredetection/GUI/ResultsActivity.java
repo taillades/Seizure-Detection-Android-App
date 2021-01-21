@@ -65,7 +65,17 @@ public class ResultsActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         float[] ecg = bundle.getFloatArray(LiveActivity.SIGNAL);
         byteArray = floatArrayToByteArray(ecg);
-
+        probabilityToDie = analyseNN0(byteArray);
+        if(probabilityToDie > 0){
+            try {
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.setData(Uri.parse("tel:144"));
+                startActivity(callIntent);
+            } catch (ActivityNotFoundException activityException) {
+                Log.e("Calling a Phone Number", "Call failed", activityException);
+            }
+        }
+        mStrokeResults.setText(String.valueOf(probabilityToDie));
     }
 
     private static byte[] floatArrayToByteArray(float[] input)
@@ -88,18 +98,6 @@ public class ResultsActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void v) {
                         Toast.makeText(ResultsActivity.this, "Analysis model downloaded", Toast.LENGTH_SHORT).show();
-
-                        probabilityToDie = analyseNN0(byteArray);
-                        if(probabilityToDie > 0){
-                            try {
-                                Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                                callIntent.setData(Uri.parse("tel:144"));
-                                startActivity(callIntent);
-                            } catch (ActivityNotFoundException activityException) {
-                                Log.e("Calling a Phone Number", "Call failed", activityException);
-                            }
-                        }
-                        mStrokeResults.setText(String.valueOf(probabilityToDie));
                     }
                 });
 
@@ -130,6 +128,7 @@ public class ResultsActivity extends AppCompatActivity {
         modelOutput.rewind();
         FloatBuffer probabilities = modelOutput.asFloatBuffer();
         Toast.makeText(ResultsActivity.this, "Signal was analysed", Toast.LENGTH_SHORT).show();
+
         return probabilities.get(0);
     }
 
