@@ -174,7 +174,7 @@ public class LiveActivity extends AppCompatActivity {
         //mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
         deviceId = intent.getStringExtra(EXTRAS_DEVICE_ID);
         mCompressionRate = intent.getIntExtra(EXTRAS_COMPRESSION_RATE, 2);
-        deviceId = "E78BAE13";
+        //deviceId = "E78BAE13";
 
         if (Build.VERSION.SDK_INT >= 23) {
             this.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);

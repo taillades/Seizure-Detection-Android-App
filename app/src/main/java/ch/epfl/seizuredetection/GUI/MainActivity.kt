@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     intentStartLive.putExtra(RECORDING_ID, recordingKeySaved)
                     intentStartLive.putExtra(EXTRAS_DEVICE_ADDRESS, mDeviceAddress)
                     intentStartLive.putExtra(EXTRAS_COMPRESSION_RATE, selectedRate)
-                    var idd = deviceID!!.text
+                    var idd = deviceID!!.text.toString()
                     intentStartLive.putExtra(EXTRAS_DEVICE_ID, idd)
                     startActivity(intentStartLive)
                 }
