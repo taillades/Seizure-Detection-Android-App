@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
@@ -57,6 +58,8 @@ import java.util.UUID;
 
 import ch.epfl.seizuredetection.Bluetooth.BluetoothLeService;
 import ch.epfl.seizuredetection.Bluetooth.SampleGattAttributes;
+import ch.epfl.seizuredetection.Data.AppDatabase;
+import ch.epfl.seizuredetection.Data.Constant;
 import ch.epfl.seizuredetection.R;
 import ch.epfl.seizuredetection.ml.CompressionNn0;
 
@@ -125,6 +128,11 @@ public class LiveActivity extends AppCompatActivity {
     private XYplotSeriesList xyPlotSeriesList;
     public static final String HR_PLOT = "HR Polar H10";
 
+    //SQlite
+    AppDatabase db;
+    private List<Integer> hrList = new ArrayList<Integer>();
+    private int sizeListToSave = 10;
+
     // TODO: editar esta función para que haga display de los datos
     private void displayData(int intExtra) {
 
@@ -167,6 +175,12 @@ public class LiveActivity extends AppCompatActivity {
         View profileButton = findViewById(R.id.profile);
         ViewGroup parent2 = (ViewGroup) profileButton.getParent();
         parent2.removeView(profileButton);
+
+        //SQLite
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, Constant.BD_NAME)
+                .allowMainThreadQueries()
+                .build();
+
 
 
         final Intent intent = getIntent();

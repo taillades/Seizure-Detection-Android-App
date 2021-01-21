@@ -49,8 +49,6 @@ public class ResultsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //Toast.makeText(ResultsActivity.this, "Accept your heart like it is", Toast.LENGTH_SHORT).show();
                 Toast.makeText(ResultsActivity.this, "Don't eat too much cholesterol", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(ResultsActivity.this, MainActivity.class);
-                startActivity(intent);
             }});
 
         //Remove going back button from toolbar
