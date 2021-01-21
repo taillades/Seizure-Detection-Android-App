@@ -68,12 +68,14 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.putExtra(EditProfileActivity.USER_ID, user.getUid());
+                            int id = db.profileDAO().getId(email);
+                            intent.putExtra("USER_ID_SQ",Integer. toString(id));
                             Toast.makeText(LoginActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
                             startActivity(intent);
                         } else {
-                            Toast.makeText(LoginActivity.this, "Authentication with Firebase failed.", Toast.LENGTH_SHORT).show();
-                           editTextPassword.setError("Wrong email or password");
-                            editTextPassword.requestFocus();
+                            //If authentication with Firebase fails, try with local storage
+                            //Toast.makeText(LoginActivity.this, "Authentication with Firebase failed.", Toast.LENGTH_SHORT).show();
+                            loginSQL(email,password);
                         }
                     }
                 });
@@ -142,16 +144,16 @@ public class LoginActivity extends AppCompatActivity {
 
                 //Firebase
                 login(email, pwd);
-                //SQLite
-               // loginSQL(email,pwd);
+
             }
         });
     }
 
     private void loginSQL(String email, String password) {
         String pwd = db.profileDAO().getPwd(email);
-        if (pwd.equals(password)) {
+        if (pwd != null && pwd.equals(password)) {
             int id = db.profileDAO().getId(email);
+            Toast.makeText(LoginActivity.this, "Seizure detection is not available without internet connection.", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("USER_ID", Integer.toString(id));
             startActivity(intent);

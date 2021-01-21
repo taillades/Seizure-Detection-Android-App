@@ -19,6 +19,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
@@ -46,6 +47,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private var play: ImageButton? = null
     private var deviceID: EditText? = null
     private var profileButton: ImageButton? = null
+    private var backButton: ImageButton? = null
     val EXTRAS_DEVICE_ID = "DEVICE_ID"
     val EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS"
     val EXTRAS_COMPRESSION_RATE= "COMPRESSION_RATE"
@@ -59,9 +61,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         deviceID = findViewById(R.id.textDeviceID)
         play = findViewById<ImageButton>(R.id.play);
+
+        val intent: Intent = getIntent()
+        val userIDsq = intent.extras!!.getString("USER_ID_SQ")
+        val userID = intent.extras!!.getString(USER_ID)
+
         play!!.setOnClickListener(View.OnClickListener {
-            val intent: Intent = getIntent()
-            val userID = intent.extras!!.getString(USER_ID)
             val database = FirebaseDatabase.getInstance()
             val profileGetRef = database.getReference("profiles")
             val recordingRef = profileGetRef.child(userID!!).child("recordings").push()
@@ -92,9 +97,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         profileButton = findViewById<ImageButton>(R.id.profile)
         profileButton!!.setOnClickListener {
             val intentProfile = Intent(this@MainActivity, EditProfileActivity::class.java)
-            //intentProfile.putExtra(USER_ID, userID)
+            intentProfile.putExtra("USER_ID_SQ", userIDsq)
             startActivity(intentProfile)
         }
+
+        //Remove going back button from toolbar
+        backButton = findViewById<ImageButton>(R.id.backButton)
+        val parent2 = backButton!!.parent as ViewGroup
+        parent2.removeView(backButton)
+
 
         val compressionRateSelector: Spinner = findViewById(R.id.compressionRateSelector)
         ArrayAdapter.createFromResource(

@@ -8,6 +8,7 @@ import androidx.room.Room;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -91,7 +92,7 @@ public class EditProfileActivity extends AppCompatActivity {
         //Get USER_ID extra from main for SQLite
         Intent intent = getIntent();
         if (intent != null) {
-             idSQ = intent.getStringExtra("USER_ID");
+             idSQ = intent.getStringExtra("USER_ID_SQ");
            // Toast.makeText(EditProfileActivity.this, "valor columna" + idSQ, Toast.LENGTH_SHORT).show();
         }
         db = Room.databaseBuilder(getApplicationContext(),AppDatabase.class, Constant.BD_NAME)
@@ -152,19 +153,22 @@ public class EditProfileActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    // Failed to read values from Firebase, use SQLite
                     //Log.w(TAG, , error.toException());
-                    Toast.makeText(EditProfileActivity.this, "Failed to read values from firebase.", Toast.LENGTH_SHORT).show();
-                    height = db.profileDAO().getHeight(Integer. parseInt(idSQ));
-                    weight = db.profileDAO().getWeight(Integer. parseInt(idSQ));
-                    pwd  = db.profileDAO().getPassword(Integer. parseInt(idSQ));
+                    //Toast.makeText(EditProfileActivity.this, "Failed to read values from firebase.", Toast.LENGTH_SHORT).show();
 
-                    editTextPassword.setText(pwd);
-                    editHeight.setText(String.valueOf(height));
-                    editWeight.setText(String.valueOf(weight));
-                    Toast.makeText(EditProfileActivity.this, pwd, Toast.LENGTH_SHORT).show();
                 }
             });
+        }
+
+        if(TextUtils.isEmpty(editWeight.getText())  ){
+
+            height = db.profileDAO().getHeight(Integer. parseInt(idSQ));
+            weight = db.profileDAO().getWeight(Integer. parseInt(idSQ));
+            pwd  = db.profileDAO().getPassword(Integer. parseInt(idSQ));
+
+            editTextPassword.setText(pwd);
+            editHeight.setText(String.valueOf(height));
+            editWeight.setText(String.valueOf(weight));
         }
     }
 
@@ -210,6 +214,13 @@ public class EditProfileActivity extends AppCompatActivity {
         }else if(newEmail.equals(email) && newWeight.equals(weight) && newHeight.equals(height) && newPwd.equals(pwd)){
             Toast.makeText(EditProfileActivity.this, "No values changed", Toast.LENGTH_SHORT).show();
         }else {
+            //Change values in SQLite
+            db.profileDAO().updateEmail(newEmail,Integer. parseInt(idSQ));
+            db.profileDAO().updateHeight(Integer.valueOf(newHeight),Integer. parseInt(idSQ));
+            db.profileDAO().updateWeight(Float.valueOf(newWeight),Integer. parseInt(idSQ));
+            db.profileDAO().updatePassword(newPwd,Integer. parseInt(idSQ));
+
+            //Change values in Firebase
             profileGetRef.runTransaction(new Transaction.Handler() {
                 @NonNull
                 @Override

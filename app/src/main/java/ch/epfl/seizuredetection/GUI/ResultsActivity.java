@@ -47,8 +47,9 @@ public class ResultsActivity extends AppCompatActivity {
         mAccept = findViewById(R.id.AcceptButton);
         mAccept.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Toast.makeText(ResultsActivity.this, "Accept your heart like it is", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(ResultsActivity.this, "Accept your heart like it is", Toast.LENGTH_SHORT).show();
                 Toast.makeText(ResultsActivity.this, "Don't eat too much cholesterol", Toast.LENGTH_SHORT).show();
+
             }});
 
         //Remove going back button from toolbar
